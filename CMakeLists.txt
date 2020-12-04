@@ -1,11 +1,14 @@
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.18)
 
 project(ice)
 
 # Importing differrent libraries
-
-find_package(PkgConfig REQUIRED) 
-pkg_check_modules(fmt REQUIRED IMPORTED_TARGET fmt)
+if(UNIX)
+	find_package(PkgConfig REQUIRED) 
+	pkg_check_modules(fmt REQUIRED IMPORTED_TARGET fmt)
+elseif(WIN32)
+	add_subdirectory(externals)
+endif()
 
 # Compile engine sub-modules
 
@@ -21,4 +24,5 @@ add_subdirectory(debug)
 
 add_executable(ice main.cpp)
 target_link_libraries(ice PUBLIC debug_lib)
+target_link_libraries(ice PUBLIC fmt)
 
