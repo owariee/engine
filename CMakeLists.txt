@@ -4,10 +4,12 @@ project(ice)
 
 # Importing differrent libraries
 if(UNIX)
-	find_package(PkgConfig REQUIRED) 
-	pkg_check_modules(fmt REQUIRED IMPORTED_TARGET fmt)
+    find_package(PkgConfig REQUIRED) 
+    pkg_check_modules(fmt REQUIRED IMPORTED_TARGET fmt)
+    pkg_check_modules(glfw REQUIRED IMPORTED_TARGET glfw3)
+    pkg_check_modules(glew REQUIRED IMPORTED_TARGET glew)
 elseif(WIN32)
-	add_subdirectory(externals)
+    add_subdirectory(externals)
 endif()
 
 # Compile engine sub-modules
