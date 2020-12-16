@@ -3,6 +3,8 @@
 #include "fmt/color.h"
 #include <iostream>
 
+#ifdef __DEBUG
+
 void Debug::print(int flag, int index_subsystem, std::string message) 
 {
     fmt::terminal_color color = fmt::terminal_color::bright_magenta;
@@ -33,3 +35,13 @@ void Debug::print(int flag, int index_subsystem, std::string message)
     fmt::print(fg(color), "{}::{}: {}.",type, subsystem[index_subsystem], message);
     return;
 }
+
+#else
+
+void Debug::print(int flag, int index_subsystem, std::string message) 
+{
+    return;
+}
+
+#endif
+
