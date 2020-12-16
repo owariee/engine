@@ -1,7 +1,8 @@
 #ifndef MEMORY_HPP
 #define MEMORY_HPP
 
-namespace Memory {
+namespace Memory
+{
     private:
         typedef struct 
         { 

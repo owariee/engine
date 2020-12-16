@@ -1,3 +1,3 @@
 
-add_library(memory OBJECT Debug.cpp)
+add_library(memory OBJECT Memory.cpp)
 
