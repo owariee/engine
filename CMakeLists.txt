@@ -3,20 +3,20 @@ cmake_minimum_required(VERSION 3.18)
 project(ice)
 
 # Importing differrent libraries
-if(UNIX)
-	find_package(PkgConfig REQUIRED) 
-	pkg_check_modules(fmt REQUIRED IMPORTED_TARGET fmt)
-elseif(WIN32)
-	add_subdirectory(externals)
-endif()
+add_subdirectory(externals)
+
+# Set _DEBUG preprocessor macro if debug mode is set on Cmake
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_compile_definitions(_DEBUG)
+endif (CMAKE_BUILD_TYPE STREQUAL "Debug")
 
 # Compile engine sub-modules
 
 add_subdirectory(debug)
-#add_subdirectory(graphics)
+add_subdirectory(memory)
+add_subdirectory(graphics)
 #add_subdirectory(sound)
 #add_subdirectory(imgui)
-#add_subdirectory(memory)
 #add_subdirectory(vfs)
 #add_subdirectory(window)
 
@@ -24,7 +24,6 @@ add_subdirectory(debug)
 
 add_executable(ice main.cpp)
 target_link_libraries(ice PUBLIC debug_lib)
-target_link_libraries(ice PUBLIC fmt)
-
+target_link_libraries(ice PUBLIC memory)
 
 
