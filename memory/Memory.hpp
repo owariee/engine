@@ -3,7 +3,7 @@
 
 namespace Memory
 {
-    private:
+    //private:
         typedef struct 
         { 
             int size;
@@ -15,7 +15,7 @@ namespace Memory
 
         void SanitizeCheck(void);
 
-    public:
+    //public:
         void ZoneInit(int bytes);
         void* ZoneAlloc(int bytes);
         void ZoneFree(void* pointer);

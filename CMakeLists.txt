@@ -5,11 +5,16 @@ project(ice)
 # Importing differrent libraries
 add_subdirectory(externals)
 
+# Set _DEBUG preprocessor macro if debug mode is set on Cmake
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_compile_definitions(_DEBUG)
+endif (CMAKE_BUILD_TYPE STREQUAL "Debug")
+
 # Compile engine sub-modules
 
 add_subdirectory(debug)
 add_subdirectory(memory)
-#add_subdirectory(graphics)
+add_subdirectory(graphics)
 #add_subdirectory(sound)
 #add_subdirectory(imgui)
 #add_subdirectory(vfs)

@@ -1,6 +1,9 @@
 #include "Debug.hpp"
+
 #include "fmt/core.h"
 #include "fmt/color.h"
+#include "glad/glad.h"
+
 #include <iostream>
 
 #ifdef _DEBUG

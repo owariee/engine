@@ -1,6 +1,6 @@
 #include "Memory.hpp"
 
-#include "Debug.hpp"
+#include "../Debug/Debug.hpp"
 
 #include <cstdlib>
 
