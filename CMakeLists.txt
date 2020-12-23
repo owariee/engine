@@ -18,12 +18,11 @@ add_subdirectory(graphics)
 #add_subdirectory(sound)
 #add_subdirectory(imgui)
 #add_subdirectory(vfs)
-#add_subdirectory(window)
+add_subdirectory(window)
 
 # Create engine executable
 
 add_executable(ice main.cpp)
-target_link_libraries(ice PUBLIC debug_lib)
-target_link_libraries(ice PUBLIC memory)
+target_link_libraries(ice PUBLIC debug_lib memory graphics window)
 
 
