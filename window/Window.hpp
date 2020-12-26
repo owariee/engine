@@ -8,7 +8,8 @@ class Window
 {
     private:
         bool shouldClose;
-        GLFWwindow* window;        
+        GLFWwindow* window;
+        bool isGamepadConnected(int gamepad);   
 
     public:
         typedef enum {Fullscreen, Windowed, Borderless} Mode;
