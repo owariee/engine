@@ -51,3 +51,42 @@ Window::~Window()
 {
     glfwTerminate();
 }
+
+bool Window::isKeyPressed(int key)
+{
+    int state = glfwGetKey(Window::window, key);
+    if(state == GLFW_PRESS){ return true; }
+    else { return false; }
+}
+
+bool Window::isKeyBeingPressed(int key)
+{
+    int state = glfwGetKey(Window::window, key);
+    if(state == GLFW_REPEAT) { return true; }
+    else { return false; }
+}
+
+bool Window::isKeyReleased(int key)
+{
+    int state = glfwGetKey(Window::window, key);
+    if(state == GLFW_RELEASE) { return true; }
+    else { return false; }
+}
+
+Window::MousePosition Window::getMousePosition()
+{
+    Window::MousePosition mousepostemp = { 0, 0 };
+    glfwGetCursorPos(Window::window, &(mousepostemp.x), &(mousepostemp.y));
+    return mousepostemp;
+}
+
+Window::Resolution Window::getResolution()
+{
+    Window::Resolution restemp = { 0, 0 };
+    glfwGetWindowSize(Window::window, &(restemp.height),&(restemp.width));
+    return restemp;
+}
+Window::Mode Window::getMode()
+{
+    
+}
