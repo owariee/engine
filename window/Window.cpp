@@ -17,7 +17,10 @@ bool Window::isGamepadConnected(int gamepad)
 }
 
 Window::Window(const char* title, Window::Mode mode, Window::Resolution res)
-{
+{    
+    GLFWmonitor* primary_monitor = glfwGetPrimaryMonitor();
+    const GLFWvidmode* glfwvidmode = glfwGetVideoMode(primary_monitor);
+
     if (!glfwInit())
     {
         Debug::print(Debug::Flags::Error,
@@ -25,8 +28,27 @@ Window::Window(const char* title, Window::Mode mode, Window::Resolution res)
                      "Cannot intialize Window Subsystem!");
         return;
     }
+    
+    switch (mode)
+    {
+        case Window::Mode::Windowed:
+            Window::window = glfwCreateWindow(res.width, res.height, title, NULL, NULL);
+            break;
+        case Window::Mode::Fullscreen:            
+            Window::window = glfwCreateWindow(res.width, res.height, title, primary_monitor, NULL);
+            break;
+        case Window::Mode::Borderless:
+            glfwWindowHint(GLFW_RED_BITS, glfwvidmode->redBits);
+            glfwWindowHint(GLFW_GREEN_BITS, glfwvidmode->greenBits);
+            glfwWindowHint(GLFW_BLUE_BITS, glfwvidmode->blueBits);
+            glfwWindowHint(GLFW_REFRESH_RATE, glfwvidmode->refreshRate);
+            Window::window = glfwCreateWindow(glfwvidmode->width, glfwvidmode->height, title, primary_monitor, NULL);
+            break;
+        default:
+            Window::window = glfwCreateWindow(res.width, res.height, title, primary_monitor, NULL);
+            break;
+    }
 
-    Window::window = glfwCreateWindow(res.width, res.height, title, NULL, NULL);
     if (!Window::window)
     {
         glfwTerminate();
