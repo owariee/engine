@@ -18,8 +18,7 @@ bool Window::isGamepadConnected(int gamepad)
 
 Window::Window(const char* title, Window::Mode mode, Window::Resolution res)
 {    
-    GLFWmonitor* primary_monitor = glfwGetPrimaryMonitor();
-    const GLFWvidmode* glfwvidmode = glfwGetVideoMode(primary_monitor);
+    GLFWmonitor* primary_monitor = NULL;    
 
     if (!glfwInit())
     {
@@ -29,25 +28,22 @@ Window::Window(const char* title, Window::Mode mode, Window::Resolution res)
         return;
     }
     
-    switch (mode)
+    if(mode == Window::Mode::Fullscreen || mode == Window::Mode::Borderless)
     {
-        case Window::Mode::Windowed:
-            Window::window = glfwCreateWindow(res.width, res.height, title, NULL, NULL);
-            break;
-        case Window::Mode::Fullscreen:            
-            Window::window = glfwCreateWindow(res.width, res.height, title, primary_monitor, NULL);
-            break;
-        case Window::Mode::Borderless:
-            glfwWindowHint(GLFW_RED_BITS, glfwvidmode->redBits);
-            glfwWindowHint(GLFW_GREEN_BITS, glfwvidmode->greenBits);
-            glfwWindowHint(GLFW_BLUE_BITS, glfwvidmode->blueBits);
-            glfwWindowHint(GLFW_REFRESH_RATE, glfwvidmode->refreshRate);
-            Window::window = glfwCreateWindow(glfwvidmode->width, glfwvidmode->height, title, primary_monitor, NULL);
-            break;
-        default:
-            Window::window = glfwCreateWindow(res.width, res.height, title, primary_monitor, NULL);
-            break;
+        primary_monitor = glfwGetPrimaryMonitor();
     }
+    if(mode == Window::Mode::Borderless)
+    {
+        const GLFWvidmode* glfwvidmode = glfwGetVideoMode(primary_monitor);
+        glfwWindowHint(GLFW_RED_BITS, glfwvidmode->redBits);
+        glfwWindowHint(GLFW_GREEN_BITS, glfwvidmode->greenBits);
+        glfwWindowHint(GLFW_BLUE_BITS, glfwvidmode->blueBits);
+        glfwWindowHint(GLFW_REFRESH_RATE, glfwvidmode->refreshRate);
+        res.width = glfwvidmode->width;
+        res.height = glfwvidmode->height;
+    }
+
+    Window::window = glfwCreateWindow(res.width, res.height, title, primary_monitor, NULL);
 
     if (!Window::window)
     {
