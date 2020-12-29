@@ -10,7 +10,7 @@ bool Window::isGamepadConnected(int gamepad)
         return true;
     }
     {        
-        std::string message = "Gamepad " + std::to_string(gamepad) + " is unplugged.";
+        std::string message = "Gamepad" + std::to_string(gamepad + 1) + " is unplugged.";
         Debug::print(Debug::Flags::Warning, Debug::Subsystem::Window, message);
         return false;
     }
@@ -115,7 +115,8 @@ bool Window::isGamepadButtonPressed(int gamepad, int button)
         const  unsigned  char * buttons = glfwGetJoystickButtons ( gamepad , & count);
         if(buttons[button] == GLFW_PRESS) { return true; }
         else { return false; }
-    }    
+    }
+    else{ return false; } 
 }
 bool Window::isGamepadButtonBeingPressed(int gamepad, int button)
 {    
@@ -126,6 +127,7 @@ bool Window::isGamepadButtonBeingPressed(int gamepad, int button)
         if(buttons[button] == GLFW_REPEAT) { return true; }
         else { return false; }
     }
+    else{ return false; }
 }
 bool Window::isGamepadButtonReleased(int gamepad, int button)
 {     
@@ -136,6 +138,7 @@ bool Window::isGamepadButtonReleased(int gamepad, int button)
         if(buttons[button] == GLFW_RELEASE) { return true; }
         else { return false; }
     }
+    else{ return false; }
 }
 int Window::getGamepadAxis(int gamepad, int axis)
 {    
@@ -145,6 +148,7 @@ int Window::getGamepadAxis(int gamepad, int axis)
         const float* jaxis = glfwGetJoystickAxes(gamepad, & count);
         return jaxis[axis];
     }
+    else{ return false; }
 }
 //Session: Mouse inputs
 bool Window::isMousePressed(int mouseButton)
