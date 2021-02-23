@@ -1,4 +1,7 @@
+#ifndef SHADER_HPP
+#define SHADER_HPP
 
+#include "glad/glad.h"
 
 class Shader {
 
@@ -9,11 +12,13 @@ class Shader {
         void use();
 
     private:
-        int program;
+        GLuint program;
 
-        bool errorCheck(int* bin, int type);
-        int* compile(const char* shader, int type);
+        bool errorCheck(GLuint bin, int type);
+        GLuint compile(const char* shader, int type);
         const char* load_file(const char* name, const char* extension);
 
 };
+
+#endif//SHADER_HPP
 

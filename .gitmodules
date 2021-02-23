@@ -19,3 +19,6 @@
 [submodule "externals/glad"]
 	path = externals/glad
 	url = https://github.com/Dav1dde/glad
+[submodule "externals/microtar"]
+	path = externals/microtar
+	url = https://github.com/rxi/microtar

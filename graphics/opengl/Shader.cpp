@@ -1,7 +1,5 @@
 #include "Shader.hpp"
 
-#include "glad/glad.h"
-
 #include <iostream>
 #include <string>
 #include <vector>
@@ -36,62 +34,51 @@ Shader::Shader(const char* name) {
         types.push_back(type);
     }
 
-    std::vector<int*> shaders; 
+    std::vector<GLuint> shaders; 
     for (int i = 0; i < code.size(); i++) {
-        int* tmp_bin = Shader::compile(code[i], types[i]);
-        if (((int)tmp_bin) == 1) {
+        GLuint tmp_bin = Shader::compile(code[i], types[i]);
+        if (tmp_bin == 1) {
             continue;
         }
         shaders.push_back(tmp_bin);
     }
 
-    unsigned int* bin = (unsigned int*)glCreateProgram();
+    GLuint bin = glCreateProgram();
 
-    for (int* shader : shaders) {
-        glAttachShader(*bin, *shader);
+    for (auto shader : shaders) {
+        glAttachShader(bin, shader);
     }
 
-    glLinkProgram(*bin);
+    glLinkProgram(bin);
 
-    for (int* shader : shaders) {
-        glDeleteShader(*shader);
+    for (auto shader : shaders) {
+        glDeleteShader(shader);
     }
     
-    if (Shader::errorCheck((int*)bin, 0)) {
+    if (Shader::errorCheck(bin, 0)) {
         Shader::program = 1;
     } else {
-        Shader::program = (int)bin;
+        Shader::program = bin;
     }
 
     return;
 }
 
-// Shader::~Shader(void)
-// called at destruction of instance
 Shader::~Shader(void) {
     glDeleteProgram(Shader::program);
-    return;
 }
 
-//  bool Shader::errorCheck(int* bin, int type)
-//  verify if has an error on compilation/linking and print it to stdout
-//
-//  bin -> shader/program pointer
-//  type -> shader type or 0 to indicate program link 
-//
-//  return 0 if everything okay
-//  return 1 if has errors
-bool Shader::errorCheck(int* bin, int type) {
+bool Shader::errorCheck(GLuint bin, int type) {
     int success = 0;
-    glGetShaderiv(*bin, GL_COMPILE_STATUS, &success);
+    glGetShaderiv(bin, GL_COMPILE_STATUS, &success);
 
     if (!success) {
         char info[512];
 
         if (type != 0) {
-            glGetShaderInfoLog(*bin, 512, NULL, info);
+            glGetShaderInfoLog(bin, 512, NULL, info);
         } else  {
-            glGetProgramInfoLog(*bin, 512, NULL, info);
+            glGetProgramInfoLog(bin, 512, NULL, info);
         }
         
         std::string error = "";
@@ -126,26 +113,18 @@ bool Shader::errorCheck(int* bin, int type) {
 //
 //  return pointer to the shader binary if everything okay
 //  return 1 if has errors
-int* Shader::compile(const char* shader, int type) {
-    unsigned int* bin = (unsigned int*)glCreateShader(type);
-    glShaderSource(*bin, 1, &shader, NULL);
-    glCompileShader(*bin);
+GLuint Shader::compile(const char* shader, int type) {
+    GLuint bin = glCreateShader(type);
+    glShaderSource(bin, 1, &shader, NULL);
+    glCompileShader(bin);
 
-    if (Shader::errorCheck((int*)bin, type)) {
-        return (int*)1;
+    if (Shader::errorCheck(bin, type)) {
+        return 1;
     } else {
-        return (int*)bin;
+        return bin;
     }
 }
 
-//  int* Shader::load_file(const char* name, const char* extension)
-//  load shader code from file
-//
-//  name -> filename
-//  extension -> file extension, determine shader type
-//
-//  return "" if error reading file
-//  return shader code if everything okay 
 const char* Shader::load_file(const char* name, const char* extension) {
     std::ifstream file;
     file.exceptions(std::ifstream::failbit | std::ifstream::badbit);

@@ -1,6 +1,7 @@
 
 add_subdirectory(fmt)
 add_subdirectory(glfw)
+#target_include_directories(glfw PUBLIC ./glfw/include)
 #add_subdirectory(openal-soft)
 add_subdirectory(lz4/build/cmake)
 add_subdirectory(glad)
@@ -51,3 +52,5 @@ add_library(lua lua/lapi.c
 
 target_include_directories(lua PUBLIC ./lua)
 
+add_library(microtar microtar/src/microtar.c)
+target_include_directories(microtar PUBLIC ./microtar/src)
