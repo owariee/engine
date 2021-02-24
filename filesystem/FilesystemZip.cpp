@@ -1,6 +1,6 @@
-#include "FilesystemLZ4.hpp"
+#include "FilesystemZip.hpp"
 
-#include "FileLZ4.hpp"
+#include "FileZip.hpp"
 
 #include <fstream>
 #include <filesystem>

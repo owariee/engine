@@ -1,155 +1,242 @@
-#include "FileLZ4.hpp"
+#include "FileZip.hpp"
 
-#include "microtar.h"
+#include "Debug.hpp"
 
-#include <iostream>
+#include "miniz.h"
 
-FileLZ4::FileLZ4(FileInfo& fileInfo)
-: info(fileInfo)
-, readOnly(true)
-, mode(0)
-, file(nullptr)
+#include <filesystem>
+#include <algorithm>
+#include <string>
+#include <tuple>
+
+Zip::Zip(const std::string& zipPath)
+: fileName(zipPath)
 {
-}
-
-FileLZ4::~FileLZ4()
-{
-    FileLZ4::close();
-}
-
-bool FileLZ4::isOpen()
-{
-    return FileLZ4::file != nullptr;
-}
-
-bool FileLZ4::isReadOnly()
-{
-    return FileLZ4::readOnly;
-}
-
-void FileLZ4::close()
-{
-    if (FileLZ4::isOpen())
+    Zip::zipArchive = static_cast<mz_zip_archive*>(malloc(sizeof(mz_zip_archive_tag)));
+    memset(Zip::zipArchive, 0, sizeof(mz_zip_archive_tag));
+    
+    mz_bool status = mz_zip_reader_init_file((mz_zip_archive*)Zip::zipArchive, zipPath.c_str(), 0);
+    if (!status)
     {
-        delete FileLZ4::file;
-        FileLZ4::file = nullptr;
+        Debug::print(Debug::Flags::Error, Debug::Subsystem::Vfs,
+          "Cannot open zip file: " + zipPath);
+    }
+    
+    for (mz_uint i = 0; i < mz_zip_reader_get_num_files((mz_zip_archive*)Zip::zipArchive); i++)
+    {
+        mz_zip_archive_file_stat file_stat;
+        if (!mz_zip_reader_file_stat((mz_zip_archive*)Zip::zipArchive, i, &file_stat))
+        {
+            Debug::print(Debug::Flags::Error, Debug::Subsystem::Vfs, 
+            "Cannot read entry with index: " + std::to_string(i) + " from zip archive " + zipPath);
+            continue;
+        }
+        
+        Zip::entries[file_stat.m_filename] = std::make_tuple(file_stat.m_file_index, file_stat.m_uncomp_size);
     }
 }
-
-void FileLZ4::open(FileInterface::Mode mode, mtar_t* tar)
+Zip::~Zip()
 {
-    if (FileLZ4::isOpen() && FileLZ4::mode == mode)
+    free(Zip::zipArchive);
+}
+    
+bool Zip::mapFile(const std::string& filename, std::vector<uint8_t>& data)
+{
+    Zip::EntriesMap::const_iterator it = Zip::entries.find(filename);
+    if (it == Zip::entries.end()) {
+        return false;
+    }
+    
+    uint32_t index = std::get<0>(it->second);
+    uint64_t size = std::get<1>(it->second);
+    data.resize((size_t)size);
+    
+    bool ok = mz_zip_reader_extract_to_mem_no_alloc((mz_zip_archive*)Zip::zipArchive,
+                                                    index,
+                                                    data.data(),
+                                                    (size_t)size,
+                                                    0, 0, 0);
+    return ok;
+}
+const std::string& Zip::getFileName() const
+{
+    return Zip::fileName;
+}
+
+bool Zip::isReadOnly() const
+{
+    struct stat fileStat;
+    if (stat(Zip::getFileName().c_str(), &fileStat) < 0) {
+        return false;
+    }
+    //LINUX :: S_IWUSR and #include <sys/stat.h>
+    return (fileStat.st_mode & (unsigned short)std::filesystem::perms::owner_write);
+}
+
+FileZip::FileZip(FileInfo& fileInfo, Zip* zipFile)
+: zipArchive(zipFile)
+, info(fileInfo)
+, readOnly(true)
+, opened(false)
+, hasChanges(false)
+, seekPos(0)
+, mode(0)
+{
+    if (FileZip::zipArchive)
     {
-        FileLZ4::seek(0, FileInterface::Origin::Begin);
+        Debug::print(Debug::Flags::Error, Debug::Subsystem::Vfs,
+          "Cannot init zip file from empty zip archive");
+    }
+}
+FileZip::~FileZip()
+{
+    
+}
+
+bool FileZip::isOpen()
+{
+    return FileZip::opened;
+}
+bool FileZip::isReadOnly()
+{
+    return (FileZip::zipArchive && FileZip::zipArchive->isReadOnly() && FileZip::readOnly);
+}
+
+void FileZip::close()
+{   
+    if (FileZip::isReadOnly() || !FileZip::hasChanges)
+    {
+        FileZip::opened = false;
         return;
     }
     
-    FileLZ4::mode = mode;
-    FileLZ4::readOnly = true;
-    
-    std::ios_base::openmode open_mode = (std::ios_base::openmode)0x00;
-    if (mode & FileInterface::Mode::Read)
-    {
-        open_mode |= std::fstream::in;
+    FileZip::opened = false;
+}
+void FileZip::open(FileInterface::Mode mode)
+{
+    // TODO: ZIPFS - Add implementation of readwrite mode
+    if ((mode & FileInterface::Mode::Write) ||
+        (mode & FileInterface::Append)) {
+        Debug::print(Debug::Flags::Error, Debug::Subsystem::Vfs,
+          "Files from zip can be opened in read only mode");
+        return;
     }
+    
+    if (!FileZip::info.isValid() ||
+        (FileZip::isOpen() && FileZip::mode == mode) ||
+        !FileZip::zipArchive)
+    {
+        return;
+    }
+    
+    std::string absPath = FileZip::info.getAbsolutePath();
+    if (absPath[0] == '/')
+    {
+        absPath = absPath.substr(1, absPath.length() - 1);
+    }
+    
+    bool ok = FileZip::zipArchive->mapFile(absPath, FileZip::data);
+    if (!ok) {
+        Debug::print(Debug::Flags::Error, Debug::Subsystem::Vfs,
+          "Cannot open file: " + absPath + " from zip: " + FileZip::zipArchive->getFileName());
+        return;
+    }
+    
+    FileZip::mode = mode;
+    FileZip::readOnly = true;
+    FileZip::seekPos = 0;
     if (mode & FileInterface::Mode::Write)
     {
-        FileLZ4::readOnly = false;
-        open_mode |= std::fstream::out;
+        FileZip::readOnly = false;
     }
     if (mode & FileInterface::Mode::Append)
     {
-        FileLZ4::readOnly = false;
-        open_mode |= std::fstream::app;
+        FileZip::readOnly = false;
+        FileZip::seekPos = FileZip::getSize() > 0 ? FileZip::getSize() - 1 : 0;
     }
     if (mode & FileInterface::Mode::Truncate)
     {
-        open_mode |= std::fstream::trunc;
+        FileZip::data.clear();
     }
-
-    mtar_header_t header;
-    mtar_find(tar, FileLZ4::info.getAbsolutePath().c_str(), &header);
-    FileLZ4::file = (char*)calloc(1, header.size + 1);
-    mtar_read_data(tar, FileLZ4::file, header.size);
-    FileLZ4::size = header.size;
+    
+    FileZip::opened = true;
 }
 
-FileInfo& FileLZ4::getFileInfo()
+FileInfo& FileZip::getFileInfo()
 {
-    return FileLZ4::info;
+    return FileZip::info;
 }
-
-uint64_t FileLZ4::getSize()
+uint64_t FileZip::getSize()
 {
-    if (!FileLZ4::isOpen())
+    if (FileZip::isOpen())
     {
-        return 0;
+        return FileZip::data.size();
     }
-
-    uint64_t curPos = FileLZ4::tell();
-    FileLZ4::seek(0, FileInterface::Origin::End);
-    uint64_t size = FileLZ4::tell();
-    FileLZ4::seek(curPos, FileInterface::Origin::Begin);
-    return size;
+    
+    return 0;
 }
-
-uint64_t FileLZ4::seek(uint64_t offset, FileInterface::Origin origin)
+uint64_t FileZip::seek(uint64_t offset, FileInterface::Origin origin)
 {
-    if (!FileLZ4::isOpen())
+    if (!FileZip::isOpen())
     {
         return 0;
     }
     
-    std::ios_base::seekdir way;
-    if (origin == FileInterface::Origin::Begin)
+    if (origin == FileInterface::Begin)
     {
-        way = std::ios_base::beg;
+        FileZip::seekPos = offset;
     }
-    else if (origin == FileInterface::Origin::End)
+    else if (origin == FileInterface::End)
     {
-        way = std::ios_base::end;
+        FileZip::seekPos = FileZip::getSize() - offset;
     }
     else
     {
-        way = std::ios_base::cur;
+        FileZip::seekPos += offset;
     }
+    FileZip::seekPos = std::min(FileZip::seekPos, FileZip::getSize() - 1);
     
-    FileLZ4::file.seekg(offset, way);
-    FileLZ4::file.seekp(offset, way);
-    
-    return FileLZ4::tell();
+    return FileZip::tell();
 }
-
-uint64_t FileLZ4::tell()
+uint64_t FileZip::tell()
 {
-    if (!FileLZ4::isOpen())
-    {
-        return 0;
-    }
-
-    return static_cast<uint64_t>(FileLZ4::file.tellg());
+    return FileZip::seekPos;
 }
-
-uint64_t FileLZ4::read(uint8_t* buffer, uint64_t size)
+uint64_t FileZip::read(uint8_t* buffer, uint64_t size)
 {
-    if (!FileLZ4::isOpen())
-    {
-        return 0;
-    }
-
-    mtar_read_data(&tar, buffer, size);
-    
-    return size;
-}
-
-uint64_t FileLZ4::write(uint8_t* buffer, uint64_t size)
-{
-    if (!FileLZ4::isOpen() || FileLZ4::isReadOnly())
+    if (!FileZip::isOpen())
     {
         return 0;
     }
     
-    mtar_write_data(&tar, buffer, size);
+    uint64_t bufferSize = (FileZip::getSize() - FileZip::tell());
+    uint64_t maxSize = std::min(size, bufferSize);
+    if (maxSize > 0)
+    {
+        memcpy(buffer, FileZip::data.data(), (size_t)maxSize);
+    }
+    else
+    {
+        return 0;
+    }
+    
+    return maxSize;
+}
+uint64_t FileZip::write(uint8_t* buffer, uint64_t size)
+{
+    if (!FileZip::isOpen() || FileZip::isReadOnly())
+    {
+        return 0;
+    }
+    
+    uint64_t bufferSize = (FileZip::getSize() - FileZip::tell());
+    if (size > bufferSize)
+    {
+        FileZip::data.resize((size_t)(FileZip::data.size() + (size - bufferSize)));
+    }
+    memcpy(FileZip::data.data() + FileZip::tell(), buffer, (size_t)size);
+    
+    FileZip::hasChanges = true;
     
     return size;
 }

@@ -28,7 +28,7 @@ class FileZip final : public FileInterface
 {
         friend class FilesystemZip;
     public:
-        FileZip(FileInfo& fileInfo);
+        FileZip(FileInfo& fileInfo, Zip* zipFile);
         ~FileZip();
 
         virtual bool isOpen() override;

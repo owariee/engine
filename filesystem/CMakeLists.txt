@@ -1,6 +1,6 @@
 
-add_library(filesystem OBJECT FileInfo.cpp FileNative.cpp FilesystemNative.cpp FilesystemLZ4.cpp)
+add_library(filesystem OBJECT FileInfo.cpp FileNative.cpp FilesystemNative.cpp FileZip.cpp)
 
-target_link_libraries(filesystem debug_lib microtar)
+target_link_libraries(filesystem debug_lib miniz)
 target_include_directories(filesystem PUBLIC ./)
 

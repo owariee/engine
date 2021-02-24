@@ -7,9 +7,6 @@
 [submodule "externals/openal-soft"]
 	path = externals/openal-soft
 	url = https://github.com/kcat/openal-soft
-[submodule "externals/lz4"]
-	path = externals/lz4
-	url = https://github.com/lz4/lz4
 [submodule "externals/imgui"]
 	path = externals/imgui
 	url = https://github.com/ocornut/imgui
@@ -19,6 +16,6 @@
 [submodule "externals/glad"]
 	path = externals/glad
 	url = https://github.com/Dav1dde/glad
-[submodule "externals/microtar"]
-	path = externals/microtar
-	url = https://github.com/rxi/microtar
+[submodule "externals/miniz"]
+	path = externals/miniz
+	url = https://github.com/richgel999/miniz
