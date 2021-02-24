@@ -27,10 +27,14 @@ class FilesystemNative final : public FilesystemInterface
         virtual bool isFileExists(FileInfo& filePath) override;
         virtual bool isFile(FileInfo& filePath) override;
         virtual bool isDir(FileInfo& dirPath) override;
+        virtual FileList& getFileList() override;
 
     private:
         std::string basePath;
         bool initialized;
+        FileList fileList;
+
+        void buildFileList(std::string& path);
 };
 
 #endif//FILESYSTEMNATIVE_HPP

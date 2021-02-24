@@ -18,12 +18,18 @@ FilesystemNative::~FilesystemNative()
 void FilesystemNative::initialize()
 {
     FilesystemNative::initialized = true;
+
+    if (!FilesystemNative::initialize)
+    {
+        FilesystemNative::buildFileList(FilesystemNative::basePath);
+    }
 }
 
 void FilesystemNative::shutdown()
 {
     if (FilesystemNative::initialized)
     {
+        FilesystemNative::fileList.clear();
         FilesystemNative::initialized = false;
     }
 }
@@ -182,4 +188,26 @@ bool FilesystemNative::isDir(FileInfo& dirPath)
 
     return std::filesystem::is_directory(
         FilesystemNative::basePath + dirPath.getAbsolutePath());
+}
+
+FilesystemNative::FileList& FilesystemNative::getFileList()
+{
+    return FilesystemNative::fileList;
+}
+
+void FilesystemNative::buildFileList(std::string& path)
+{
+    for (const auto & entry : std::filesystem::directory_iterator(path))
+    {
+        if (entry.is_directory())
+        {
+            FilesystemNative::buildFileList(entry.path().string());
+        }
+        else
+        {
+            FileInfo fileInfo(entry.path().string());
+            FileInterface* file = new FileNative(fileInfo);
+            FilesystemNative::fileList.insert(file);
+        }
+    }
 }

@@ -30,6 +30,7 @@ class FilesystemInterface
         virtual bool isFileExists(FileInfo& filePath) = 0;
         virtual bool isFile(FileInfo& filePath) = 0;
         virtual bool isDir(FileInfo& dirPath) = 0;
+        virtual FileList& getFileList() = 0;
 };
 
 #endif//FILESYSTEMINTERFACE_HPP

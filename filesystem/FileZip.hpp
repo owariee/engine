@@ -9,8 +9,6 @@
 #include <tuple>
 #include <vector>
 
-
-
 class Zip
 {
 public:
@@ -24,9 +22,9 @@ public:
     
 private:
     std::string fileName;
-    void* zipArchive;
-    typedef std::map<std::string, std::tuple<uint32_t, uint64_t>> Zip::EntriesMap;
-    static Zip::EntriesMap Zip::entries;
+    void* zipArchive;   
+    typedef std::map<std::string, std::tuple<uint32_t, uint64_t>> EntriesMap;
+    static Zip::EntriesMap entries;
 };
 
 class FileZip final : public FileInterface

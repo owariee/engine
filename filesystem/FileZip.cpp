@@ -9,6 +9,8 @@
 #include <string>
 #include <tuple>
 
+Zip::EntriesMap Zip::entries;
+
 Zip::Zip(const std::string& zipPath)
 : fileName(zipPath)
 {

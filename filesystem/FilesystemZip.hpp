@@ -1,16 +1,16 @@
-#ifndef FILESYSTEMLZ4_HPP
-#define FILESYSTEMLZ4_HPP
+#ifndef FILESYSTEMZIP_HPP
+#define FILESYSTEMZIP_HPP
 
 #include "FilesystemInterface.hpp"
 #include "FileNative.hpp"
 
 #include <string>
 
-class FilesystemLZ4 final : public FilesystemInterface
+class FilesystemZip final : public FilesystemInterface
 {
     public:
-        FilesystemLZ4(std::string& lz4Path, std::string& basePath);
-        ~FilesystemLZ4();
+        FilesystemZip(std::string& zipPath, std::string& basePath);
+        ~FilesystemZip();
 
         virtual void initialize() override;
         virtual void shutdown() override;
@@ -30,10 +30,17 @@ class FilesystemLZ4 final : public FilesystemInterface
         virtual bool isDir(FileInfo& dirPath) override;
 
     private:
-        FileNative* file;
-        std::string lz4Path;
+        Zip* zip;
+        FileInterface* file;
+        std::string zipPath;
         std::string basePath;
         bool initialized;
+        static std::unordered_map<std::string, Zip*> openedZips;
+        std::mutex mutex;
+        FileList fileList;
+
+        //IFilePtr FindFile(const CFileInfo& fileInfo) const;
+        
 };
 
-#endif//FILESYSTEMLZ4_HPP
+#endif//FILESYSTEMZIP_HPP
