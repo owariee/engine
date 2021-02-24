@@ -12,8 +12,8 @@
 Zip::Zip(const std::string& zipPath)
 : fileName(zipPath)
 {
-    Zip::zipArchive = static_cast<mz_zip_archive*>(malloc(sizeof(mz_zip_archive_tag)));
-    memset(Zip::zipArchive, 0, sizeof(mz_zip_archive_tag));
+    Zip::zipArchive = static_cast<mz_zip_archive*>(malloc(sizeof(mz_zip_archive)));
+    memset(Zip::zipArchive, 0, sizeof(mz_zip_archive));
     
     mz_bool status = mz_zip_reader_init_file((mz_zip_archive*)Zip::zipArchive, zipPath.c_str(), 0);
     if (!status)

@@ -51,4 +51,5 @@ add_library(lua lua/lapi.c
 
 target_include_directories(lua PUBLIC ./lua)
 
+SET(BUILD_EXAMPLES OFF CACHE BOOL "Build examples" FORCE)
 add_subdirectory(miniz)
