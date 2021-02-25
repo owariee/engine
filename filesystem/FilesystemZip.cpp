@@ -4,190 +4,175 @@
 
 #include <fstream>
 #include <filesystem>
+#include <memory>
 
-#include "microtar.h"
-
-FilesystemLZ4::FilesystemLZ4(std::string& lz4Path, std::string& basePath)
-: 
-lz4Path(lz4Path),
-basePath(basePath),
-initialized(false),
-file(nullptr)
+FilesystemZip::FilesystemZip(std::string& zipPath, std::string& basePath)
+: zipPath(zipPath)
+, basePath(basePath)
+, initialized(false)
 {
+
+}
+FilesystemZip::~FilesystemZip()
+{
+    
 }
 
-FilesystemLZ4::~FilesystemLZ4()
+void FilesystemZip::initialize()
 {
-    FilesystemLZ4::shutdown();
-}
-
-void FilesystemLZ4::initialize()
-{
-    FileInfo path(FilesystemLZ4::lz4Path);
-    FilesystemLZ4::file = new FileNative(path);
-    FilesystemLZ4::initialized = true;
-}
-
-void FilesystemLZ4::shutdown()
-{
-    if (FilesystemLZ4::initialized)
-    {
-        delete FilesystemLZ4::file;
-        FilesystemLZ4::file = nullptr;
-        FilesystemLZ4::initialized = false;
-    }
-}
-
-FileInterface* FilesystemLZ4::openFile(FileInfo& filePath, FileInterface::Mode mode)
-{
-    if (!FilesystemLZ4::initialized)
-    {
-        return NULL;
-    }
-
-    FileNative* file = new FileNative(filePath);
-    file->open(mode);
-    return dynamic_cast<FileInterface*>(file);
-}
-
-void FilesystemLZ4::closeFile(FileInterface* file)
-{
-    if (!FilesystemLZ4::initialized)
+    if (FilesystemZip::initialized)
     {
         return;
     }
-
-    file->close();
-}
-
-std::string& FilesystemLZ4::getBasePath()
-{
-    return FilesystemLZ4::basePath;
-}
-
-bool FilesystemLZ4::isInitialized()
-{
-    return FilesystemLZ4::initialized;
-}
-
-bool FilesystemLZ4::isReadOnly()
-{
-    if (!FilesystemLZ4::initialized)
-    {
-        return false;
+    
+    std::lock_guard<decltype(FilesystemZip::mutex)> lock(FilesystemZip::mutex);
+    FilesystemZip::zip = FilesystemZip::openedZips[FilesystemZip::zipPath];
+    if (!FilesystemZip::zip) {
+        FilesystemZip::zip = new Zip(FilesystemZip::zipPath);
+        FilesystemZip::openedZips[FilesystemZip::zipPath] = FilesystemZip::zip;
     }
+    FilesystemZip::initialized = true;   
+}
+void FilesystemZip::shutdown()
+{
+    std::lock_guard<decltype(FilesystemZip::mutex)> lock(FilesystemZip::mutex);
+    FilesystemZip::zip = nullptr;
+    if (FilesystemZip::openedZips.count(FilesystemZip::zipPath) == 1) {
+        FilesystemZip::openedZips.erase(FilesystemZip::zipPath);
+    }
+    FilesystemZip::fileList.clear();
+    FilesystemZip::initialized = false;
+}
 
-    std::filesystem::perms p;
+FileInterface* FilesystemZip::openFile(FileInfo& filePath, FileInterface::Mode mode)
+{
+    FileInfo fileInfo(filePath.getAbsolutePath(), false);
+    FileInterface* file = FilesystemZip::findFile(fileInfo);
+    bool isExists = (file != nullptr);
+    if (!isExists)
+    {        
+        file = new FileZip(fileInfo, FilesystemZip::zip);
+    }
+    file->open(mode);
+    
+    if (!isExists && file->isOpen())
+    {
+        FilesystemZip::fileList.insert(file);
+    }
+    
+    return file;
+}
+void FilesystemZip::closeFile(FileInterface* file)
+{
+    if (file)
+    {
+        file->close();
+    }
+}
+std::string& FilesystemZip::getBasePath()
+{
+    return FilesystemZip::basePath;
+}
 
-    p = std::filesystem::status(FilesystemLZ4::basePath).permissions();
-
-    if ((p & std::filesystem::perms::owner_write) == std::filesystem::perms::none)
+bool FilesystemZip::isInitialized()
+{
+    return FilesystemZip::initialized;
+}
+bool FilesystemZip::isReadOnly()
+{
+    if (!FilesystemZip::isInitialized())
     {
         return true;
     }
-    else
-    {
-        return false;
-    }
+    
+    return FilesystemZip::zip->isReadOnly();
 }
-
-bool FilesystemLZ4::createFile(FileInfo& filePath)
+bool FilesystemZip::createFile(FileInfo& filePath)
 {
-    if (!FilesystemLZ4::initialized || 
-         FilesystemLZ4::isReadOnly() ||
-         FilesystemLZ4::isFileExists(filePath))
+    bool result = false;
+    if (!FilesystemZip::isFileExists(filePath))
     {
-        return false;
-    }
-
-    if (filePath.isDir())
-    {
-        return std::filesystem::create_directory(FilesystemLZ4::basePath + filePath.getAbsolutePath());
+        FileInterface* file = FilesystemZip::openFile(filePath, FileInterface::Mode::ReadWrite);
+        if (file)
+        {
+            result = true;
+            file->close();
+        }
     }
     else
     {
-        std::ofstream(FilesystemLZ4::basePath + filePath.getAbsolutePath());
-        return true;
-    }
-}
-
-bool FilesystemLZ4::removeFile(FileInfo& filePath)
-{
-    if (!FilesystemLZ4::initialized || 
-         FilesystemLZ4::isReadOnly() ||
-        !FilesystemLZ4::isFileExists(filePath))
-    {
-        return false;
-    }
-
-    return std::filesystem::remove(
-        FilesystemLZ4::basePath + filePath.getAbsolutePath());
-}
-
-bool FilesystemLZ4::copyFile(FileInfo& source, FileInfo& destination)
-{
-    if (!FilesystemLZ4::initialized || 
-         FilesystemLZ4::isReadOnly() ||
-        !FilesystemLZ4::isFileExists(source) ||
-         FilesystemLZ4::isFileExists(destination))
-    {
-        return false;
-    }
-
-    std::filesystem::copy(
-        FilesystemLZ4::basePath + source.getAbsolutePath(),
-        FilesystemLZ4::basePath + destination.getAbsolutePath(),
-        std::filesystem::copy_options::recursive);
-    
-    return true;
-}
-
-bool FilesystemLZ4::renameFile(FileInfo& source, FileInfo& destination)
-{
-    if (!FilesystemLZ4::initialized || 
-         FilesystemLZ4::isReadOnly() ||
-        !FilesystemLZ4::isFileExists(source) ||
-         FilesystemLZ4::isFileExists(destination))
-    {
-        return false;
-    }
-
-    std::filesystem::rename(
-        FilesystemLZ4::basePath + source.getAbsolutePath(),
-        FilesystemLZ4::basePath + destination.getAbsolutePath());
-    
-    return true;
-}
-
-bool FilesystemLZ4::isFileExists(FileInfo& filePath)
-{
-    if (!FilesystemLZ4::initialized) 
-    {
-        return false;
+        result = true;
     }
     
-    return std::filesystem::exists(
-        FilesystemLZ4::basePath + filePath.getAbsolutePath());
+    return result;
+}
+bool FilesystemZip::removeFile(FileInfo& filePath)
+{
+    return false; //Not implemented right now
+}
+bool FilesystemZip::copyFile(FileInfo& source, FileInfo& destination)
+{
+    bool result = false;
+    if (!FilesystemZip::isReadOnly())
+    {
+        FileZip* srcFile = (FileZip*)(FilesystemZip::findFile(source));
+        FileZip* dstFile = (FileZip*)(FilesystemZip::openFile(destination,
+            FileInterface::Mode::Write));
+        
+        if (srcFile && dstFile)
+        {
+            dstFile->data.assign(srcFile->data.begin(), srcFile->data.end());
+            dstFile->close();
+            
+            result = true;
+        }
+    }
+    
+    return result;
+}
+bool FilesystemZip::renameFile(FileInfo& source, FileInfo& destination)
+{
+    return false; // TODO: Filesystem, temporally not suppoted
+}
+bool FilesystemZip::isFileExists(FileInfo& filePath)
+{
+    return (FilesystemZip::findFile(filePath) != nullptr);
+}
+bool FilesystemZip::isFile(FileInfo& filePath)
+{
+    FileInterface* file = FilesystemZip::findFile(filePath);
+    if (file)
+    {
+        return !file->getFileInfo().isDir();
+    }
+    
+    return false;
+}
+bool FilesystemZip::isDir(FileInfo& dirPath)
+{
+    FileInterface* file = FilesystemZip::findFile(dirPath);
+    if (file)
+    {
+        return file->getFileInfo().isDir();
+    }
+    
+    return false;
 }
 
-bool FilesystemLZ4::isFile(FileInfo& filePath)
+FileInterface* FilesystemZip::findFile(FileInfo& fileInfo)
 {
-    if (!FilesystemLZ4::initialized) 
+    FilesystemZip::FileList::const_iterator it = std::find_if(
+        FilesystemZip::fileList.begin(),
+        FilesystemZip::fileList.end(),
+        [&](FileInterface* file)
     {
-        return false;
-    }
-
-    return std::filesystem::is_regular_file(
-        FilesystemLZ4::basePath + filePath.getAbsolutePath());
-}
-
-bool FilesystemLZ4::isDir(FileInfo& dirPath)
-{
-    if (!FilesystemLZ4::initialized) 
+        return file->getFileInfo() == fileInfo;
+    });
+    
+    if (it != FilesystemZip::fileList.end())
     {
-        return false;
+        return *it;
     }
-
-    return std::filesystem::is_directory(
-        FilesystemLZ4::basePath + dirPath.getAbsolutePath());
+    
+    return nullptr;
 }

@@ -5,6 +5,8 @@
 #include "FileNative.hpp"
 
 #include <string>
+#include <mutex>
+#include <unordered_map>
 
 class FilesystemZip final : public FilesystemInterface
 {
@@ -39,7 +41,7 @@ class FilesystemZip final : public FilesystemInterface
         std::mutex mutex;
         FileList fileList;
 
-        //IFilePtr FindFile(const CFileInfo& fileInfo) const;
+        FileInterface* findFile(FileInfo& fileInfo);
         
 };
 
