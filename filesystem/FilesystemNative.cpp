@@ -19,7 +19,7 @@ void FilesystemNative::initialize()
 {
     FilesystemNative::initialized = true;
 
-    if (!FilesystemNative::initialize)
+    if (!FilesystemNative::initialized)
     {
         FilesystemNative::buildFileList(FilesystemNative::basePath);
     }

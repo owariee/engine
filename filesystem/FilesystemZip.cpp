@@ -6,6 +6,8 @@
 #include <filesystem>
 #include <memory>
 
+std::unordered_map<std::string, Zip*> FilesystemZip::openedZips;
+
 FilesystemZip::FilesystemZip(std::string& zipPath, std::string& basePath)
 : zipPath(zipPath)
 , basePath(basePath)

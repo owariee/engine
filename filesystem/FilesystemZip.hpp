@@ -3,6 +3,7 @@
 
 #include "FilesystemInterface.hpp"
 #include "FileNative.hpp"
+#include "FileZip.hpp"
 
 #include <string>
 #include <mutex>
