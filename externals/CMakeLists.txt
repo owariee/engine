@@ -2,7 +2,9 @@
 add_subdirectory(fmt)
 add_subdirectory(glfw)
 #target_include_directories(glfw PUBLIC ./glfw/include)
-#add_subdirectory(openal-soft)
+add_subdirectory(openal-soft)
+add_custom_command(OUTPUT "${OpenAL_BINARY_DIR}/OpenAL32.dll" COMMAND ${CMAKE_COMMAND} -E copy "${OpenAL_BINARY_DIR}/OpenAL32.dll" "${ice_BINARY_DIR}" DEPENDS ice)
+add_custom_target(copy_files ALL DEPENDS "${ice_BINARY_DIR}/OpenAL32.dll")
 add_subdirectory(glad)
 
 add_library(imgui imgui/imgui.cpp

@@ -19,7 +19,7 @@ endif (CMAKE_BUILD_TYPE STREQUAL "Debug")
 add_subdirectory(debug)
 #add_subdirectory(memory)
 add_subdirectory(graphics)
-#add_subdirectory(sound)
+add_subdirectory(audio)
 #add_subdirectory(imgui)
 add_subdirectory(filesystem)
 add_subdirectory(window)
@@ -27,6 +27,4 @@ add_subdirectory(window)
 # Create engine executable
 
 add_executable(ice main.cpp)
-target_link_libraries(ice PUBLIC debug_lib graphics window filesystem)
-
-
+target_link_libraries(ice PUBLIC debug_lib graphics window filesystem audio)
