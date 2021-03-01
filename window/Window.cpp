@@ -99,7 +99,8 @@ Window::Resolution Window::getResolution()
 }
 Window::Mode Window::getMode()
 {
-    
+    Window::Mode mode = Window::Mode::Borderless;
+    return mode;
 }
 
 //Session: keyboard inputs

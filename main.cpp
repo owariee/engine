@@ -1,38 +1,38 @@
-#include "Window.hpp"
+//#include "Windows.hpp"
 #include "Graphics.hpp"
 #include "FileInfo.hpp"
 #include "FilesystemZip.hpp"
+#include "AudioListener.hpp"
+#include "AudioSource.hpp"
+#include "AL/al.h"
+#include "AL/alc.h"
 
 #include <iostream>
 #include <string>
 
 int main(int argc, char* argv[]) 
 {
-    FilesystemZip* fs = new FilesystemZip(std::string("./teste.zip"), std::string("./"));
-    FileInfo arquivo("teste/arquivo_novo.txt");
+    std::string caminho = "../../../../Downloads/";
+    FilesystemNative* fs = new FilesystemNative(caminho);
+    FileInfo arquivo("teste.wav");
 
     fs->initialize();
 
     FileInterface* file = fs->openFile(arquivo, FileInterface::Mode::Read);
 
-    //Posicionado no comeco do primeiro sample
-    //O tamanho de um sample
-    //Quantos canais de audio o wave tem
-
-    if (file->isOpen())
+    AudioListener* listener = new AudioListener();
+    AudioSource* source = new AudioSource(file);
+    listener->SetVelocity(0,0,0);
+    
+    source->Play();
+    
+    while (true)
     {
-        char teste[35] = {};
-        teste[34] = '\0';
-        uint64_t byteslidos = file->read(reinterpret_cast<uint8_t*>(teste), 34);
-        std::cout << "Texto: " << teste << std::endl;
-        std::cout << "Bytes lidos: " << byteslidos << std::endl;
-
-        // char* message = static_cast<char*>("mensagem estranha");
-        // uint64_t pos = file->seek(0, FileInterface::Origin::End);
-        // std::cout << pos << std::endl;
-        // uint64_t bytesescritos = file->write(reinterpret_cast<uint8_t*>(message), 17);
-        // std::cout << "Bytes escritos: " << bytesescritos << std::endl;
+        /* code */
     }
+    
+    delete listener;
+    delete source;
     
     fs->closeFile(file);
 
@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
 
     delete fs;
 
-    return 0;    
+    return 0;   
 }
 
 

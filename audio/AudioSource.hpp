@@ -1,3 +1,4 @@
+//#define AL_LIBTYPE_STATIC
 #include "AL/al.h"
 #include <string>
 #include "wavheader.hpp"
@@ -7,8 +8,8 @@ class AudioSource
 {
     private:
         int num_buffer, num_soucers;
-        ALuint buffer[1];
-        ALuint source[1];
+        ALuint buffer;
+        ALuint source;
         ALenum format;
         ALsizei size;
         ALsizei frequency;

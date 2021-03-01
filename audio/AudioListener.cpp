@@ -1,13 +1,16 @@
 #include "AudioListener.hpp"
+#include "Debug.hpp"
 
 AudioListener::AudioListener(/* args */)
 {
     device = alcOpenDevice(NULL);
-    if(device)
+    if(!device)
     {
-        context = alcCreateContext(device, NULL);
-        alcMakeContextCurrent(context);
+        Debug::print(Debug::Flags::Error, Debug::Sound, "It was not possible to create a device and consequently it was not possible to create a context.");
+        return;
     }
+    context = alcCreateContext(device, NULL);
+    alcMakeContextCurrent(context);
 }
 
 AudioListener::~AudioListener()
