@@ -35,7 +35,7 @@ void Debug::print(int flag, int index_subsystem, std::string message)
         type = "UKNOWN";
         break;
     }
-    fmt::print(fg(color), "{}::{}: {}.",type, subsystem[index_subsystem], message);
+    fmt::print(fg(color), "{}::{}: {}.\n",type, subsystem[index_subsystem], message);
     return;
 }
 

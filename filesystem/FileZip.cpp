@@ -67,12 +67,8 @@ const std::string& Zip::getFileName() const
 
 bool Zip::isReadOnly() const
 {
-    struct stat fileStat;
-    if (stat(Zip::getFileName().c_str(), &fileStat) < 0) {
-        return false;
-    }
-    //LINUX :: S_IWUSR and #include <sys/stat.h>
-    return (fileStat.st_mode & (unsigned short)std::filesystem::perms::owner_write);
+    std::filesystem::perms zipPerms = std::filesystem::status(Zip::fileName).permissions();
+    return ((zipPerms & std::filesystem::perms::owner_write) != std::filesystem::perms::none);
 }
 
 FileZip::FileZip(FileInfo& fileInfo, Zip* zipFile)

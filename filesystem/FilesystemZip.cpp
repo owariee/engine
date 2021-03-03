@@ -5,6 +5,7 @@
 #include <fstream>
 #include <filesystem>
 #include <memory>
+#include <algorithm>
 
 std::unordered_map<std::string, Zip*> FilesystemZip::openedZips;
 

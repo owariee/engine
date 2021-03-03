@@ -13,18 +13,18 @@ public:
     typedef std::list<FilesystemInterface*> FileSystemList;
     typedef std::unordered_map<std::string, FilesystemInterface*> FileSystemMap;
     
-    struct SSortedAlias
+    struct SortedAlias
     {
         std::string alias;
-        IFileSystemPtr filesystem;
+        FilesystemInterface* filesystem;
         
-        SSortedAlias(const std::string& a,
-                     IFileSystemPtr fs)
+        SortedAlias(const std::string& a,
+                    FilesystemInterface* fs)
         : alias(a)
         , filesystem(fs)
         {}
     };
-    typedef std::list<SSortedAlias> TSortedAliasList;
+    typedef std::list<SortedAlias> SortedAliasList;
 
     FilesystemVirtual();
     ~FilesystemVirtual();
@@ -32,14 +32,13 @@ public:
     void addFileSystem(const std::string& alias, FilesystemInterface* filesystem);
     void removeFileSystem(const std::string& alias);
     bool isFileSystemExists(const std::string& alias) const;
-    FilesystemInterface* getFilesystem(const std::string& alias);
-    FileInteface* openFile(const FileInfo& filePath, FileInterface::Mode mode);
+    FileInterface* openFile(FileInfo& filePath, FileInterface::Mode mode);
     void closeFile(FileInterface* file);
     
 private:
-    FileSystemMap m_FileSystem;
-    TSortedAliasList m_SortedAlias;
-    std::unordered_map<uintptr_t, FilesystemInterface*> m_OpenedFiles;
+    FileSystemMap fileSystem;
+    SortedAliasList sortedAlias;
+    std::unordered_map<uintptr_t, FilesystemInterface*> openedFiles;
         
 };
 

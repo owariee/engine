@@ -1,11 +1,8 @@
-
-add_subdirectory(fmt)
 add_subdirectory(glfw)
-#target_include_directories(glfw PUBLIC ./glfw/include)
 add_subdirectory(openal-soft)
-add_custom_command(OUTPUT "${OpenAL_BINARY_DIR}/OpenAL32.dll" COMMAND ${CMAKE_COMMAND} -E copy "${OpenAL_BINARY_DIR}/OpenAL32.dll" "${ice_BINARY_DIR}" DEPENDS ice)
-add_custom_target(copy_files ALL DEPENDS "${ice_BINARY_DIR}/OpenAL32.dll")
+add_subdirectory(fmt)
 add_subdirectory(glad)
+add_subdirectory(glm)
 
 add_library(imgui imgui/imgui.cpp
                   imgui/imgui_demo.cpp
@@ -53,5 +50,5 @@ add_library(lua lua/lapi.c
 
 target_include_directories(lua PUBLIC ./lua)
 
-SET(BUILD_EXAMPLES OFF CACHE BOOL "Build examples" FORCE)
+set(BUILD_EXAMPLES OFF CACHE BOOL "Build examples" FORCE)
 add_subdirectory(miniz)

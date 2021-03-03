@@ -2,15 +2,12 @@
 #define WINDOW_HPP
 
 #include "glad/glad.h"
-#include "glfw/glfw3.h"
+#include "GLFW/glfw3.h"
+
+#include <chrono>
 
 class Window
 {
-    private:
-        bool shouldClose;
-        GLFWwindow* window;
-        bool isGamepadConnected(int gamepad);   
-
     public:
         typedef enum {Fullscreen, Windowed, Borderless} Mode;
         typedef struct { int width, height; } Resolution;
@@ -67,6 +64,18 @@ class Window
         bool isMousePressed(int mouseButton);
         bool isMouseBeingPressed(int mouseButton);
         bool isMouseReleased(int mouseButton);
+        void* getFuncProcAddress();
+        double getFrameTime();
+        void setVsync(int fps);
+    
+    private:
+        bool shouldClose;
+        GLFWwindow* window;
+        bool isGamepadConnected(int gamepad);
+        Window::Mode mode;
+        std::chrono::time_point<std::chrono::steady_clock> frameStart;
+        std::chrono::duration<double, std::milli> frameTime;
+        std::chrono::duration<double, std::milli> vsyncMs;
 };
 
 #endif//WINDOW_HPP

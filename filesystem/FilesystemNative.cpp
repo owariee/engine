@@ -201,7 +201,8 @@ void FilesystemNative::buildFileList(std::string& path)
     {
         if (entry.is_directory())
         {
-            FilesystemNative::buildFileList(entry.path().string());
+            std::string entryPath = entry.path().string();
+            FilesystemNative::buildFileList(entryPath);
         }
         else
         {

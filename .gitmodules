@@ -19,3 +19,6 @@
 [submodule "externals/miniz"]
 	path = externals/miniz
 	url = https://github.com/richgel999/miniz
+[submodule "externals/glm"]
+	path = externals/glm
+	url = https://github.com/g-truc/glm

@@ -1,6 +1,10 @@
 #include "Window.hpp"
 
-#include "../debug/Debug.hpp"
+#include "Debug.hpp"
+
+#include <chrono>
+#include <thread>
+#include <cmath>
 
 bool Window::isGamepadConnected(int gamepad)
 {
@@ -17,8 +21,10 @@ bool Window::isGamepadConnected(int gamepad)
 }
 
 Window::Window(const char* title, Window::Mode mode, Window::Resolution res)
-{    
-    GLFWmonitor* primary_monitor = NULL;    
+: mode(mode)
+, vsyncMs(0)
+{
+    GLFWmonitor* primary_monitor = NULL;
 
     if (!glfwInit())
     {
@@ -56,21 +62,34 @@ Window::Window(const char* title, Window::Mode mode, Window::Resolution res)
 
     glfwMakeContextCurrent(Window::window);
     Window::shouldClose = false;
+
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    {
+        Debug::print(Debug::Flags::Error, Debug::Subsystem::Graphics, "Failed to initialize GLAD");
+    }
+
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+    Window::frameStart = std::chrono::steady_clock::now();
 }
 
 bool Window::isRunning()
 {
-    // end of an frame
+    Window::frameTime = std::chrono::steady_clock::now() - Window::frameStart;
+    
+    if (Window::vsyncMs.count() != 0 && Window::frameTime < Window::vsyncMs)
+    {
+        std::this_thread::sleep_for(Window::vsyncMs - Window::frameTime);
+        Window::frameTime = Window::vsyncMs;
+    }
+    
+    Window::frameStart = std::chrono::steady_clock::now();
 
     glfwSwapBuffers(Window::window);
     glfwPollEvents();
-
-    // process events (Keyboard, mouse, gamepad, controller)
-
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+   
     glClear(GL_COLOR_BUFFER_BIT);
 
-    // start of new frame
     return !(glfwWindowShouldClose(Window::window) || Window::shouldClose);
 }
 
@@ -99,7 +118,7 @@ Window::Resolution Window::getResolution()
 }
 Window::Mode Window::getMode()
 {
-    
+    return Window::mode;
 }
 
 //Session: keyboard inputs
@@ -186,4 +205,26 @@ bool Window::isMouseReleased(int mouseButton)
     int state = glfwGetMouseButton(Window::window, mouseButton);
     if(state == GLFW_RELEASE) { return true;}
     else { return false; }
+}
+
+void* Window::getFuncProcAddress()
+{
+    return (void*)glfwGetProcAddress;
+}
+
+double Window::getFrameTime()
+{
+    return Window::frameTime.count();
+}
+
+void Window::setVsync(int fps)
+{
+    if (fps == 0)
+    {
+        Window::vsyncMs = std::chrono::microseconds(fps);
+        return;
+    }
+    
+    int idealFrameTime = static_cast<int>(std::roundf((1.0f/fps)*1000000));
+    Window::vsyncMs = std::chrono::microseconds(idealFrameTime);
 }
