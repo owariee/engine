@@ -3,12 +3,20 @@
 
 #include "FileInterface.hpp"
 
+#include <vector>
+#include <string>
+
 class Mesh
 {
-    Mesh(FileInterface file);
-    ~Mesh();
+    public:
+        Mesh(FileInterface file);
+        ~Mesh();
 
-    void draw();
+        void draw();
+    
+    private:
+        std::string readLine(FileInterface file);
+        std::vector<std::string> splitString(std::string line);
 };
 
 #endif//SHADER_HPP

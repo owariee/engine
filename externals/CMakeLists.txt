@@ -1,4 +1,5 @@
 add_subdirectory(glfw)
+set(LIBTYPE STATIC)
 add_subdirectory(openal-soft)
 add_subdirectory(fmt)
 add_subdirectory(glad)

@@ -1,8 +1,8 @@
-#include "Window.hpp"
 #include "Graphics.hpp"
 #include "FileInfo.hpp"
 #include "FilesystemZip.hpp"
 #include "Debug.hpp"
+#include "Window.hpp"
 
 #include <iostream>
 #include <string>
