@@ -1,20 +1,22 @@
 //#define AL_LIBTYPE_STATIC
 #include "AL/al.h"
-#include <string>
-#include "wavheader.hpp"
+#include "WAV.hpp"
 #include "FilesystemNative.hpp"
 
 class AudioSource
 {
     private:
         int num_buffer, num_soucers;
-        ALuint buffer;
+        ALuint buffers[2];
         ALuint source;
         ALenum format;
-        ALsizei size;
-        ALsizei frequency;
-        ALvoid* data;
-        void LoadWavData(FileInterface* audiofile);
+        PartialWAVHeader wavHeader;
+        DataBlock dataBlock;
+        int bufferSize;
+        FileInterface* audioFile;
+        char* bufferData;
+        void LoadWavData();
+        void fillBuffer(ALint buffer);
     public:
         AudioSource(FileInterface* audiofile);
         ~AudioSource();

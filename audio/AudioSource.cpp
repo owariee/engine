@@ -2,49 +2,53 @@
 #include "Debug.hpp"
 #include "fmt/core.h"
 #include <cstdlib>
+#include <thread>
+using namespace std::chrono_literals;
 
-void AudioSource::LoadWavData(FileInterface* audiofile)
+void AudioSource::LoadWavData()
 {
-    WAVHeader* wavheader = new WAVHeader();
-    if(audiofile->isOpen())
+    if(!(audioFile->isOpen()))
     {
-        audiofile->read(reinterpret_cast<uint8_t*>(wavheader), sizeof(WAVHeader));
-        format = AL_FORMAT_STEREO16;
-        int t = audiofile->tell();
-        size = wavheader->ChunkSize + 8 - t;
-        frequency = wavheader->SampleRate;
-        data = (ALvoid*) std::malloc(size);
-        audiofile->read(reinterpret_cast<uint8_t*>(data), size);
-        //delete wavheader;
+        Debug::print(Debug::Flags::Error, Debug::Sound, "The audio file must be open for reading.");
         return;
     }
-    Debug::print(Debug::Flags::Error, Debug::Sound, "The audio file must be open for reading.");
+    audioFile->read(reinterpret_cast<uint8_t*>(&(AudioSource::wavHeader)), sizeof(PartialWAVHeader));
+    audioFile->seek(AudioSource::wavHeader.listHeader.size - sizeof(wavHeader.listFormat), FileInterface::Origin::Middle);
+    audioFile->read(reinterpret_cast<uint8_t*>(&(AudioSource::dataBlock)), sizeof(DataBlock));
+    bool stereo = (AudioSource::wavHeader.fmtNumChannels > 1);
+    switch(AudioSource::wavHeader.fmtBitsPerSample)
+    {
+        case 16:
+            AudioSource::format = stereo ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16;
+            break;
+        case 8:
+            AudioSource::format ? AL_FORMAT_STEREO8 : AL_FORMAT_MONO8;
+            break;
+        default:
+            AudioSource::format = -1;
+            break;
+    }
 }
-
-AudioSource::AudioSource(FileInterface* audiofile)
+void AudioSource::fillBuffer(ALint buffer)
 {
-    num_buffer = 1;
+    audioFile->read(reinterpret_cast<uint8_t*>(bufferData), bufferSize);
+    alBufferData(buffer,format, bufferData, bufferSize, wavHeader.fmtSampleRate);
+}
+AudioSource::AudioSource(FileInterface* audiofile) 
+: audioFile(audiofile)
+{
+    num_buffer = 2;
     num_soucers = 1;
-    LoadWavData(audiofile);
-    alGenBuffers(num_buffer, &buffer); //generate the buffer
-    alBufferData(buffer, format, data, 176, frequency); //fills a buffer with audio data
+    bufferSize = 44100;
+    alGenBuffers(num_buffer, &(AudioSource::buffers[0])); //generate the buffer    
+    LoadWavData();
     alGenSources(num_soucers, &source); //generate the source
-    alSourcei(source, AL_BUFFER, buffer); //anex buffer to a source
-    int* frequencia = new int();
-    int * bits= new int();
-    int * channels= new int(); 
-    int * size= new int();
-    int* data= new int();
-    alGetBufferiv(buffer, AL_FREQUENCY, frequencia);
-    alGetBufferiv(buffer, AL_BITS, bits);
-    alGetBufferiv(buffer, AL_CHANNELS, channels);
-    alGetBufferiv(buffer, AL_SIZE, size);
 }
 
 AudioSource::~AudioSource()
 {
-    alDeleteBuffers(num_buffer, &buffer); //delete buffer
-    alDeleteSources(num_soucers, &source); //delete source
+    alDeleteBuffers(num_buffer, &(AudioSource::buffers[0])); //delete buffers
+    alDeleteSources(num_soucers, &(AudioSource::source)); //delete source
 }
 void AudioSource::SetPosition(float x,  float y, float z)
 {
@@ -63,7 +67,26 @@ void AudioSource::SetOrientation(float x,  float y, float z)
 }
 void AudioSource::Play()
 {
+    bufferData = static_cast<char*>(std::malloc(bufferSize));
+    for(int i =0; i<2; i++)
+    {
+        fillBuffer(buffers[i]);
+    }
+    alSourceQueueBuffers(source, 2, &buffers[0]);
     alSourcePlay(source);
+    while(true)
+    {
+        ALint processed;
+        alGetSourcei(source, AL_BUFFERS_PROCESSED, &processed);
+        std::this_thread::sleep_for(100ms);
+        while(processed--)
+        {
+            ALuint bufferID;
+            alSourceUnqueueBuffers(source, 1, &bufferID);
+            fillBuffer(bufferID);
+            alSourceQueueBuffers(source, 1, &bufferID);
+        }
+    }
 }
 void AudioSource::Stop()
 {

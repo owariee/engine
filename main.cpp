@@ -22,15 +22,9 @@ int main(int argc, char* argv[])
 
     AudioListener* listener = new AudioListener();
     AudioSource* source = new AudioSource(file);
-    listener->SetVelocity(0,0,0);
     
     source->Play();
-    
-    while (true)
-    {
-        /* code */
-    }
-    
+        
     delete listener;
     delete source;
     
