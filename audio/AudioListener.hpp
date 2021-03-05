@@ -1,3 +1,6 @@
+#ifndef AUDIOLISTENER_HPP
+#define AUDIOLISTENER_HPP
+
 //#define AL_LIBTYPE_STATIC
 #include "AL/alc.h"
 #include "AL/al.h"
@@ -15,3 +18,5 @@ class AudioListener
         void SetVelocity(float x, float y, float z);
         void SetOrientation(float x, float y, float z);
 };
+
+#endif//AUDIOLISTENER_HPP

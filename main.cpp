@@ -3,20 +3,37 @@
 #include "FilesystemZip.hpp"
 #include "Debug.hpp"
 #include "Window.hpp"
+#include "AudioSource.hpp"
+#include "AudioListener.hpp"
 
 #include <iostream>
 #include <string>
 
 int main(int argc, char* argv[]) 
 {
-    Window win("Raycaster", Window::Mode::Windowed, {800, 600});
+    std::string caminho = "./";
+    FilesystemNative* fs = new FilesystemNative(caminho);
+    FileInfo arquivo("music.wav");
 
-    win.setVsync(60);
+    fs->initialize();
 
-    while(win.isRunning())
-    {
-        std::cout << win.getFrameTime() << std::endl;
-    }
+    FileInterface* file = fs->openFile(arquivo, FileInterface::Mode::Read);
+
+    AudioListener* listener = new AudioListener();
+    AudioSource* source = new AudioSource(file);
+    
+    source->Play();
+        
+    delete listener;
+    delete source;
+    
+    fs->closeFile(file);
+
+    delete file;
+
+    fs->shutdown();
+
+    delete fs;
 
     return 0;
 }

@@ -32,4 +32,3 @@ class FileNative final : public FileInterface
 };
 
 #endif//FILENATIVE_HPP
-
