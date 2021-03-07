@@ -1,12 +1,16 @@
 #include "AudioListener.hpp"
+
 #include "Debug.hpp"
 
-AudioListener::AudioListener(/* args */)
+#include "AL/al.h"
+
+AudioListener::AudioListener()
 {
     device = alcOpenDevice(NULL);
     if(!device)
     {
-        Debug::print(Debug::Flags::Error, Debug::Sound, "It was not possible to create a device and consequently it was not possible to create a context.");
+        Debug::print(Debug::Flags::Error, Debug::Sound,
+            "It was not possible to create a device nor a context.");
         return;
     }
     context = alcCreateContext(device, NULL);
@@ -20,17 +24,19 @@ AudioListener::~AudioListener()
     alcCloseDevice(device);
 }
 
-void AudioListener::SetPosition(float x, float y, float z)
+void AudioListener::setPosition(float x, float y, float z)
 {
     ALfloat position[] = {x,y,z};
     alListenerfv(AL_POSITION, position);
 }
-void AudioListener::SetVelocity(float x, float y, float z)
+
+void AudioListener::setVelocity(float x, float y, float z)
 {
     ALfloat velocity[] = {x,y,z};
     alListenerfv(AL_VELOCITY, velocity);
 }
-void AudioListener::SetOrientation(float x, float y, float z)
+
+void AudioListener::setOrientation(float x, float y, float z)
 {
     ALfloat orientation[] = {x,y,z};
     alListenerfv(AL_ORIENTATION, orientation);

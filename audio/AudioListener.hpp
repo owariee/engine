@@ -1,22 +1,19 @@
 #ifndef AUDIOLISTENER_HPP
 #define AUDIOLISTENER_HPP
 
-//#define AL_LIBTYPE_STATIC
 #include "AL/alc.h"
-#include "AL/al.h"
-#include "stdlib.h"
 
 class AudioListener
 {
     private:
-        ALCdevice *device;
-        ALCcontext *context;            
+        ALCdevice* device;
+        ALCcontext* context;            
     public:                
-        AudioListener(/* args */);
+        AudioListener();
         ~AudioListener();
-        void SetPosition(float x, float y, float z);
-        void SetVelocity(float x, float y, float z);
-        void SetOrientation(float x, float y, float z);
+        void setPosition(float x, float y, float z);
+        void setVelocity(float x, float y, float z);
+        void setOrientation(float x, float y, float z);
 };
 
 #endif//AUDIOLISTENER_HPP
