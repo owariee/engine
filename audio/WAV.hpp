@@ -4,8 +4,23 @@
 #include <cstdint>
 
 struct RiffHeader {
-    uint32_t id;
-    int32_t size;
+    char id[4];
+    uint32_t size;
+};
+
+struct RiffChunk
+{
+    char type[4];
+};
+
+struct FormatChunk
+{
+    uint16_t audioFormat;
+    uint16_t numChannels;
+    uint32_t sampleRate;
+    uint32_t byteRate;
+    uint16_t blockAling;
+    uint16_t bitsPerSample;
 };
 
 struct PartialWAVHeader {

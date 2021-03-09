@@ -13,7 +13,7 @@ int main(int argc, char* argv[])
 {
     std::string caminho = "./";
     FilesystemNative* fs = new FilesystemNative(caminho);
-    FileInfo arquivo("music.wav");
+    FileInfo arquivo("music28.wav");
 
     fs->initialize();
 

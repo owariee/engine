@@ -1,5 +1,6 @@
 #include "FileNative.hpp"
 
+#include <cstring>
 #include <iostream>
 
 FileNative::FileNative(FileInfo& fileInfo)
@@ -62,6 +63,7 @@ void FileNative::open(FileInterface::Mode mode)
     {
         open_mode |= std::fstream::trunc;
     }
+    open_mode |= std::fstream::binary;
     
     FileNative::file.open(
         FileNative::info.getAbsolutePath(), open_mode);
