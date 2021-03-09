@@ -1,12 +1,9 @@
 #include "AudioSource.hpp"
 #include "Debug.hpp"
-#include "WAV.hpp"
-#include "fmt/core.h"
-#include <cstdlib>
+
+#include <chrono>
 #include <cstring>
-#include <ostream>
 #include <thread>
-#include <iostream>
 
 using namespace std::chrono_literals;
 
@@ -28,7 +25,7 @@ void AudioSource::fillBuffer(ALuint* buffer)
 
 AudioSource::AudioSource(FileInterface* audiofile) 
 : audioFile(audiofile)
-, bufferSize(44100)
+, bufferSize(176400)
 , dataEndPos(0)
 , dataStartPos(0)
 , format(0)
@@ -107,13 +104,10 @@ AudioSource::AudioSource(FileInterface* audiofile)
             AudioSource::audioFile->seek(riffHeader.size, FileInterface::Origin::Middle);
         }
     }
-
-    AudioSource::bufferData = static_cast<char*>(std::malloc(AudioSource::bufferSize));
 }
 
 AudioSource::~AudioSource()
 {
-    std::free(AudioSource::bufferData);
     alDeleteBuffers(2, &(AudioSource::buffers[0]));
     alDeleteSources(1, &(AudioSource::source));
 }
@@ -138,6 +132,7 @@ void AudioSource::setOrientation(float x,  float y, float z)
 
 void AudioSource::play()
 {
+    AudioSource::bufferData = static_cast<char*>(std::malloc(AudioSource::bufferSize));
     AudioSource::audioFile->seek(AudioSource::dataStartPos, FileInterface::Origin::Begin);
 
     for(int i = 0; i < 2; i++)
@@ -151,7 +146,7 @@ void AudioSource::play()
     {
         ALint processed;
         alGetSourcei(AudioSource::source, AL_BUFFERS_PROCESSED, &processed);
-        std::this_thread::sleep_for(100ms);
+        std::this_thread::sleep_for(500ms);
         while(processed--)
         {
             ALuint buffer;
@@ -161,6 +156,7 @@ void AudioSource::play()
             //std::cout << dataEndPos << std::endl;
         }
     }
+    std::free(AudioSource::bufferData);
 }
 
 void AudioSource::stop()
