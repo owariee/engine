@@ -1,7 +1,7 @@
 #include "Window.hpp"
 #include "Graphics.hpp"
 #include "FileInfo.hpp"
-#include "FilesystemZip.hpp"
+#include "FilesystemNative.hpp"
 
 #include <iostream>
 #include <string>

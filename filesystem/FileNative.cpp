@@ -109,8 +109,14 @@ uint64_t FileNative::seek(uint64_t offset, FileInterface::Origin origin)
         way = std::ios_base::cur;
     }
     
-    FileNative::file.seekg(offset, way);
-    FileNative::file.seekp(offset, way);
+    if (FileNative::isReadOnly())
+    {
+        FileNative::file.seekg(offset, way);
+    }
+    else 
+    {
+        FileNative::file.seekp(offset, way);
+    }
     
     return FileNative::tell();
 }

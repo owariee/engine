@@ -1,6 +1,6 @@
 #include "Graphics.hpp"
 #include "FileInfo.hpp"
-#include "FilesystemZip.hpp"
+#include "FilesystemNative.hpp"
 #include "Debug.hpp"
 #include "Window.hpp"
 #include "AudioSource.hpp"
@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
     AudioListener* listener = new AudioListener();
     AudioSource* source = new AudioSource(file);
     
-    source->Play();
+    source->play();
         
     delete listener;
     delete source;
