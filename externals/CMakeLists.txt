@@ -1,6 +1,11 @@
 add_subdirectory(glfw)
-set(LIBTYPE STATIC)
+
+set(LIBTYPE STATIC ON CACHE BOOL "Static openal build" FORCE)
+set(ALSOFT_EXAMPLES OFF CACHE BOOL "Build openal examples" FORCE)
+set(ALSOFT_UTILS OFF CACHE BOOL "Build openal config util" FORCE)
+set(ALSOFT_UPDATE_BUILD_VERSION OFF CACHE BOOL "Build openal version utility" FORCE)
 add_subdirectory(openal-soft)
+
 add_subdirectory(fmt)
 add_subdirectory(glad)
 add_subdirectory(glm)
@@ -51,5 +56,5 @@ add_library(lua lua/lapi.c
 
 target_include_directories(lua PUBLIC ./lua)
 
-set(BUILD_EXAMPLES OFF CACHE BOOL "Build examples" FORCE)
+set(BUILD_EXAMPLES OFF CACHE BOOL "Build miniz examples" FORCE)
 add_subdirectory(miniz)

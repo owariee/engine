@@ -7,6 +7,13 @@
 
 using namespace std::chrono_literals;
 
+ALuint AudioSource::clearBuffer()
+{
+    ALuint buffer;
+    alSourceUnqueueBuffers(AudioSource::source, 1, &buffer);
+    return buffer;
+}
+
 void AudioSource::fillBuffer(ALuint* buffer)
 {
     int bufferSizeBackup = bufferSize;
@@ -30,9 +37,14 @@ AudioSource::AudioSource(FileInterface* audiofile)
 , dataStartPos(0)
 , format(0)
 , sampleRate(0)
+, playing(false)
+, paused(false)
+, stopped(true)
 {
     alGenSources(1, &(AudioSource::source));
     alGenBuffers(2, &(AudioSource::buffers[0])); 
+
+    alSourcei(AudioSource::source, AL_LOOPING, AL_FALSE);
     
     if(!(AudioSource::audioFile->isOpen()))
     {
@@ -104,12 +116,16 @@ AudioSource::AudioSource(FileInterface* audiofile)
             AudioSource::audioFile->seek(riffHeader.size, FileInterface::Origin::Middle);
         }
     }
+
+    AudioSource::bufferData = static_cast<char*>(std::malloc(AudioSource::bufferSize));
+    AudioSource::audioFile->seek(AudioSource::dataStartPos, FileInterface::Origin::Begin);
 }
 
 AudioSource::~AudioSource()
 {
     alDeleteBuffers(2, &(AudioSource::buffers[0]));
     alDeleteSources(1, &(AudioSource::source));
+    std::free(AudioSource::bufferData);
 }
 
 void AudioSource::setPosition(float x,  float y, float z)
@@ -132,39 +148,66 @@ void AudioSource::setOrientation(float x,  float y, float z)
 
 void AudioSource::play()
 {
-    AudioSource::bufferData = static_cast<char*>(std::malloc(AudioSource::bufferSize));
-    AudioSource::audioFile->seek(AudioSource::dataStartPos, FileInterface::Origin::Begin);
-
-    for(int i = 0; i < 2; i++)
+    if (AudioSource::stopped)
     {
-        AudioSource::fillBuffer(&(AudioSource::buffers[i]));
+        for(int i = 0; i < 2; i++)
+        {
+            AudioSource::fillBuffer(&(AudioSource::buffers[i]));
+        }
     }
 
     alSourcePlay(AudioSource::source);
 
-    while(AudioSource::audioFile->tell() < AudioSource::dataEndPos)
+    AudioSource::playing = true;
+    AudioSource::stopped = false;
+    AudioSource::paused = false;
+}
+#include <iostream>
+
+void AudioSource::updateBuffers()
+{
+    if (!(AudioSource::playing))
     {
-        ALint processed;
-        alGetSourcei(AudioSource::source, AL_BUFFERS_PROCESSED, &processed);
-        std::this_thread::sleep_for(500ms);
-        while(processed--)
-        {
-            ALuint buffer;
-            alSourceUnqueueBuffers(AudioSource::source, 1, &buffer);
-            fillBuffer(&buffer);
-            //std::cout << AudioSource::audioFile->tell() << std::endl;
-            //std::cout << dataEndPos << std::endl;
-        }
+        return;
     }
-    std::free(AudioSource::bufferData);
+
+    if (AudioSource::audioFile->tell() >= AudioSource::dataEndPos)
+    {
+        return;
+    }
+
+    ALint processed;
+    alGetSourcei(AudioSource::source, AL_BUFFERS_PROCESSED, &processed);
+    while(processed--)
+    {
+        ALuint buffer = clearBuffer();
+        fillBuffer(&buffer);
+        std::cout << AudioSource::audioFile->tell() << std::endl;
+        std::cout << dataEndPos << std::endl;
+    }
 }
 
 void AudioSource::stop()
 {
+    AudioSource::audioFile->seek(AudioSource::dataStartPos, FileInterface::Origin::Begin);
+
     alSourceStop(AudioSource::source);
+
+    for (int i = 0; i != 2; i++)
+    {
+        AudioSource::clearBuffer();
+    }
+
+    AudioSource::playing = false;
+    AudioSource::stopped = true;
+    AudioSource::paused = false;
 }
 
 void AudioSource::pause()
 {
-    alSourcePause(AudioSource::source);
+    alSourceStop(AudioSource::source);
+
+    AudioSource::playing = false;
+    AudioSource::stopped = false;
+    AudioSource::paused = true;
 }

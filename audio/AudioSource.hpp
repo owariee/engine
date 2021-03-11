@@ -32,11 +32,19 @@ class AudioSource
 
         uint64_t dataStartPos;
         uint64_t dataEndPos;
+
+        uint64_t dataActualPos;
         
         int bufferSize;
         char* bufferData;
 
+        ALuint clearBuffer();
         void fillBuffer(ALuint* buffer);
+        void threadPlay();
+
+        bool paused;
+        bool playing;
+        bool stopped;
 
     public:
         AudioSource(FileInterface* audiofile);
@@ -47,6 +55,7 @@ class AudioSource
         void play();
         void pause();
         void stop();
+        void updateBuffers();
 };
 
 #endif//AUDIOSOURCE_HPP

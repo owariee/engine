@@ -16,6 +16,7 @@ FilesystemZip::FilesystemZip(std::string& zipPath, std::string& basePath)
 {
 
 }
+
 FilesystemZip::~FilesystemZip()
 {
     
@@ -36,6 +37,7 @@ void FilesystemZip::initialize()
     }
     FilesystemZip::initialized = true;   
 }
+
 void FilesystemZip::shutdown()
 {
     std::lock_guard<decltype(FilesystemZip::mutex)> lock(FilesystemZip::mutex);
@@ -65,6 +67,7 @@ FileInterface* FilesystemZip::openFile(FileInfo& filePath, FileInterface::Mode m
     
     return file;
 }
+
 void FilesystemZip::closeFile(FileInterface* file)
 {
     if (file)
@@ -72,6 +75,7 @@ void FilesystemZip::closeFile(FileInterface* file)
         file->close();
     }
 }
+
 std::string& FilesystemZip::getBasePath()
 {
     return FilesystemZip::basePath;
@@ -81,6 +85,7 @@ bool FilesystemZip::isInitialized()
 {
     return FilesystemZip::initialized;
 }
+
 bool FilesystemZip::isReadOnly()
 {
     if (!FilesystemZip::isInitialized())
@@ -90,6 +95,7 @@ bool FilesystemZip::isReadOnly()
     
     return FilesystemZip::zip->isReadOnly();
 }
+
 bool FilesystemZip::createFile(FileInfo& filePath)
 {
     bool result = false;
@@ -109,10 +115,12 @@ bool FilesystemZip::createFile(FileInfo& filePath)
     
     return result;
 }
+
 bool FilesystemZip::removeFile(FileInfo& filePath)
 {
     return false; //Not implemented right now
 }
+
 bool FilesystemZip::copyFile(FileInfo& source, FileInfo& destination)
 {
     bool result = false;
@@ -133,14 +141,17 @@ bool FilesystemZip::copyFile(FileInfo& source, FileInfo& destination)
     
     return result;
 }
+
 bool FilesystemZip::renameFile(FileInfo& source, FileInfo& destination)
 {
     return false; // TODO: Filesystem, temporally not suppoted
 }
+
 bool FilesystemZip::isFileExists(FileInfo& filePath)
 {
     return (FilesystemZip::findFile(filePath) != nullptr);
 }
+
 bool FilesystemZip::isFile(FileInfo& filePath)
 {
     FileInterface* file = FilesystemZip::findFile(filePath);
@@ -151,6 +162,7 @@ bool FilesystemZip::isFile(FileInfo& filePath)
     
     return false;
 }
+
 bool FilesystemZip::isDir(FileInfo& dirPath)
 {
     FileInterface* file = FilesystemZip::findFile(dirPath);
