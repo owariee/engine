@@ -1,5 +1,3 @@
---Mesh {VAO, VBO, EBO}
---Shader
 Material
 Waveform Object Loader
 BMP texture loader

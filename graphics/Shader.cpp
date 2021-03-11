@@ -4,12 +4,14 @@
 
 Shader::Shader(FileInterface* vertexFile, FileInterface* fragmentFile) {
     uint32_t vertexSize = vertexFile->getSize();
-    char* vertexSource = new char[vertexSize];
+    char* vertexSource = new char[vertexSize+1];
     vertexFile->read(reinterpret_cast<uint8_t*>(vertexSource), vertexSize);
+    vertexSource[vertexSize] = '\0';
 
     uint32_t fragmentSize = fragmentFile->getSize();
-    char* fragmentSource = new char[fragmentSize];
+    char* fragmentSource = new char[fragmentSize+1];
     fragmentFile->read(reinterpret_cast<uint8_t*>(fragmentSource), fragmentSize);
+    fragmentSource[fragmentSize] = '\0';
 
     GLuint vertexShader = Shader::compile(const_cast<const char*>(vertexSource),
         GL_VERTEX_SHADER);
@@ -41,7 +43,14 @@ Shader::~Shader(void) {
 
 bool Shader::errorCheck(GLuint bin, int type) {
     int success;
-    glGetShaderiv(bin, GL_COMPILE_STATUS, &success);
+    if(type != 0)
+    {
+        glGetShaderiv(bin, GL_COMPILE_STATUS, &success);
+    }  
+    else
+    {
+        glGetProgramiv(bin, GL_LINK_STATUS, &success);
+    }
 
     if(success)
     {
