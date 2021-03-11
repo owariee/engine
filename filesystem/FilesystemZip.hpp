@@ -12,7 +12,7 @@
 class FilesystemZip final : public FilesystemInterface
 {
     public:
-        FilesystemZip(std::string& zipPath, std::string& basePath);
+        FilesystemZip(std::string zipPath, std::string basePath);
         ~FilesystemZip();
 
         virtual void initialize() override;

@@ -5,9 +5,10 @@
 #include <fstream>
 #include <filesystem>
 
-FilesystemNative::FilesystemNative(std::string& basePath)
+FilesystemNative::FilesystemNative(std::string basePath)
 : basePath(basePath)
 {
+    FilesystemNative::initialize();
 }
 
 FilesystemNative::~FilesystemNative()

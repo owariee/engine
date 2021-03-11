@@ -8,7 +8,7 @@
 class FilesystemNative final : public FilesystemInterface
 {
     public:
-        FilesystemNative(std::string& basePath);
+        FilesystemNative(std::string basePath);
         ~FilesystemNative();
 
         virtual void initialize() override;

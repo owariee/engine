@@ -1,22 +1,21 @@
-#ifndef SHADER_HPP
-#define SHADER_HPP
+#ifndef MESH_HPP
+#define MESH_HPP
 
-#include "FileInterface.hpp"
+#include "glad/glad.h"
 
 #include <vector>
 #include <string>
 
 class Mesh
 {
-    public:
-        Mesh(FileInterface file);
-        ~Mesh();
-
-        void draw();
-    
     private:
-        std::string readLine(FileInterface file);
-        std::vector<std::string> splitString(std::string line);
+        unsigned int vertexArray;
+        unsigned int vertexBuffer;
+        unsigned int elementBuffer;
+    public:
+        Mesh(float* vertices, uint32_t verticeNumber, int* indices, uint32_t indiceNumber);
+        ~Mesh();
+        void draw();
 };
 
-#endif//SHADER_HPP
+#endif//MESH_HPP

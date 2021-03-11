@@ -182,8 +182,6 @@ void AudioSource::updateBuffers()
     {
         ALuint buffer = clearBuffer();
         fillBuffer(&buffer);
-        std::cout << AudioSource::audioFile->tell() << std::endl;
-        std::cout << dataEndPos << std::endl;
     }
 }
 
