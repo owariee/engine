@@ -48,6 +48,6 @@ void AudioManager::processSounds(double frameTime)
         {
             AudioSource* temp = *i;
             temp->updateBuffers();
-        }   
+        }
     }
 }

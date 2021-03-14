@@ -1,5 +1,7 @@
 #include "Shader.hpp"
 #include "Mesh.hpp"
+#include "Camera2D.hpp"
+#include "Camera3D.hpp"
 #include "FileInfo.hpp"
 #include "FilesystemNative.hpp"
 #include "FileNative.hpp"
@@ -16,7 +18,7 @@ int main(int argc, char* argv[])
     AudioManager audioManager;
     Window win("Sound loop", Window::Mode::Windowed, {800, 600});
 
-    win.setVsync(60);
+    win.setVsync(144);
     
     FileInfo arquivo("music.wav");
     FileInterface* file = fs.openFile(arquivo, FileInterface::Mode::Read);
@@ -29,12 +31,20 @@ int main(int argc, char* argv[])
     FileInterface* fragmentFile = fs.openFile(fragmentShaderPath, FileInterface::Mode::Read);
     Shader sh0(vertexFile, fragmentFile);
 
+    Camera2D cam(800, 600);
+    Camera3D cam1(800, 600, 45.0f);
 
-    float vertices[] = {
+    float vertices3d[] = {
         0.5f,  0.5f, 0.0f,  // top right
         0.5f, -0.5f, 0.0f,  // bottom right
         -0.5f, -0.5f, 0.0f,  // bottom left
         -0.5f,  0.5f, 0.0f   // top left 
+    };
+    float vertices[] = {
+        300.0f,  10.0f, 0.0f,  // top right
+        300.0f, 300.0f, 0.0f,  // bottom right
+        10.0f, 300.0f, 0.0f,  // bottom left
+        10.0f,  10.0f, 0.0f   // top left 
     };
     int indices[] = {  // note that we start from 0!
         0, 1, 3,   // first triangle
@@ -42,24 +52,25 @@ int main(int argc, char* argv[])
     };
 
     Mesh mesh0(vertices, 12, indices, 6);
+    Mesh mesh1(vertices3d, 12, indices, 6);
 
     while(win.isRunning())
     {
         //input
-        if (win.isKeyPressed(Window::Keys::S))
-        {
-            audio0->stop();
-        }
+        // if (win.isKeyPressed(Window::Keys::S))
+        // {
+        //     audio0->stop();
+        // }
 
-        if (win.isKeyPressed(Window::Keys::P))
-        {
-            audio0->play();
-        }
+        // if (win.isKeyPressed(Window::Keys::P))
+        // {
+        //     audio0->play();
+        // }
 
-        if (win.isKeyPressed(Window::Keys::O))
-        {
-            audio0->pause();
-        }
+        // if (win.isKeyPressed(Window::Keys::O))
+        // {
+        //     audio0->pause();
+        // }
 
         //audio
         audioManager.processSounds(win.getFrameTime());
@@ -67,7 +78,21 @@ int main(int argc, char* argv[])
         //logic
         //draw
         sh0.use();
-        mesh0.draw();
+        // for (int i = 0; i < 4 ; i++) 
+        // {
+        //     for (int j = 0; j < 4 ; j++) 
+        //     {
+        //         std::cout << teste[i][j] << " ";
+        //     }
+        //     std::cout << std::endl;
+        // }
+        cam1.processInput(&win);
+        sh0.setUniform("cameraMatrix", cam1.getViewMatrix());
+        mesh1.draw();
+
+        //cam.processInput(&win);
+        sh0.setUniform("cameraMatrix", cam.getViewMatrix());
+        mesh0.draw();        
     }
     
     fs.closeFile(file);

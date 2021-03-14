@@ -2,6 +2,8 @@
 
 #include "Debug.hpp"
 
+#include "glm/gtc/type_ptr.hpp"
+
 Shader::Shader(FileInterface* vertexFile, FileInterface* fragmentFile) {
     uint32_t vertexSize = vertexFile->getSize();
     char* vertexSource = new char[vertexSize+1];
@@ -102,4 +104,10 @@ GLuint Shader::compile(const char* shader, int type) {
 
 void Shader::use() {
     glUseProgram(Shader::program);
+}
+
+void Shader::setUniform(const char* name, glm::mat4 matrix)
+{
+    unsigned int uniformLocation = glGetUniformLocation(Shader::program, name);
+    glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(matrix));
 }

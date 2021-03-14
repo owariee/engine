@@ -19,6 +19,8 @@ Mesh::Mesh(float* vertices, uint32_t verticeNumber, int* indices, uint32_t indic
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0); 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    Mesh::modelMatrix = glm::mat4();
 }
 
 Mesh::~Mesh()
@@ -32,4 +34,14 @@ void Mesh::draw()
 {
     glBindVertexArray(Mesh::vertexArray);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+}
+
+void Mesh::setModelMatrix(glm::mat4 modelMatrix)
+{
+    Mesh::modelMatrix = modelMatrix;
+}
+
+glm::mat4 Mesh::getModelMatrix()
+{
+    return Mesh::modelMatrix;
 }

@@ -17,12 +17,12 @@ endif (CMAKE_BUILD_TYPE STREQUAL "Debug")
 # Compile engine sub-modules
 
 add_subdirectory(debug)
+add_subdirectory(window)
 add_subdirectory(filesystem)
+add_subdirectory(audio)
 #add_subdirectory(memory)
 add_subdirectory(graphics)
-add_subdirectory(audio)
 #add_subdirectory(imgui)
-add_subdirectory(window)
 
 # Create engine executable
 

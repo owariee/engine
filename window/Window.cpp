@@ -82,6 +82,8 @@ bool Window::isRunning()
         std::this_thread::sleep_for(Window::vsyncMs - Window::frameTime);
         Window::frameTime = Window::vsyncMs;
     }
+
+    glfwSetInputMode(Window::window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     
     Window::frameStart = std::chrono::steady_clock::now();
 
