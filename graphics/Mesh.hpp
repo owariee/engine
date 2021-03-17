@@ -15,6 +15,8 @@ class Mesh
         unsigned int elementBuffer;
 
         glm::mat4 modelMatrix;
+
+        uint32_t indiceNumber;
     public:
         Mesh(float* vertices, uint32_t verticeNumber, int* indices, uint32_t indiceNumber);
         ~Mesh();

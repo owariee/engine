@@ -1,6 +1,7 @@
 #include "Mesh.hpp"
 
 Mesh::Mesh(float* vertices, uint32_t verticeNumber, int* indices, uint32_t indiceNumber)
+: indiceNumber(indiceNumber)
 {
     glGenVertexArrays(1, &(Mesh::vertexArray));
     glBindVertexArray(Mesh::vertexArray);
@@ -13,8 +14,11 @@ Mesh::Mesh(float* vertices, uint32_t verticeNumber, int* indices, uint32_t indic
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Mesh::elementBuffer);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indiceNumber * sizeof(int), indices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0); 
@@ -33,7 +37,7 @@ Mesh::~Mesh()
 void Mesh::draw()
 {
     glBindVertexArray(Mesh::vertexArray);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, Mesh::indiceNumber, GL_UNSIGNED_INT, 0);
 }
 
 void Mesh::setModelMatrix(glm::mat4 modelMatrix)
