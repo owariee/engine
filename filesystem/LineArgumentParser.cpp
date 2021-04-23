@@ -1,14 +1,13 @@
 #include "LineArgumentParser.hpp"
 
-#include "Debug.hpp"
+#include <iostream>
 
 LineArgumentParser::LineArgumentParser(FileInterface* file)
 : file(file)
 {
     if(!(LineArgumentParser::file->isOpen()))
     {
-        Debug::print(Debug::Flags::Error, Debug::Subsystem::Vfs,
-            "The file must be open for reading.");
+        std::cout << "[Filesystem] The file must be open for reading." << std::endl;
         return;
     }
 
@@ -86,8 +85,8 @@ bool LineArgumentParser::validateArgumentNumber(int min, int max)
     auto argumentCount = LineArgumentParser::getArgumentCount();
     if(argumentCount < min || argumentCount > max)
     {
-        Debug::print(Debug::Flags::Error, Debug::Subsystem::Graphics, 
-            "Malformed command: " + LineArgumentParser::getArgument(0));
+        std::cout << "[Filesystem] Malformed command: " + LineArgumentParser::getArgument(0) 
+                << std::endl;
         return true;
     }
     return false;

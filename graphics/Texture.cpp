@@ -1,5 +1,6 @@
 #include "Texture.hpp"
 
+#include "glad/glad.h"
 #include "BMPLoader.hpp"
 
 Texture::Texture(FileInterface* file)
@@ -16,7 +17,7 @@ Texture::Texture(FileInterface* file)
     glm::vec2 res = bmpLoader->getImageResolution();
 
     GLenum format = bmpLoader->getImageFormat();
-
+    
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, res.x, res.y, 0,
         format, GL_UNSIGNED_BYTE, bmpLoader->getImageData());
     glGenerateMipmap(GL_TEXTURE_2D);
@@ -29,7 +30,7 @@ Texture::~Texture()
     glDeleteTextures(1, &(Texture::id));
 }
 
-void Texture::use(GLenum samplerPos)
+void Texture::use(unsigned int samplerPos)
 {
     glActiveTexture(samplerPos);
     glBindTexture(GL_TEXTURE_2D, Texture::id);

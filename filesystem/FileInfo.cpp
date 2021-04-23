@@ -1,6 +1,6 @@
 #include "FileInfo.hpp"
 
-#include "Debug.hpp"
+#include <iostream>
 
 FileInfo::FileInfo(const std::string& filePath, bool isDir)
 {
@@ -22,9 +22,9 @@ FileInfo::FileInfo(const std::string& filePath, bool isDir)
 
     if (!FileInfo::name.length())
     {
-        Debug::print(Debug::Flags::Error, Debug::Subsystem::Vfs,
-          "While creating FileInfo instance (" + FileInfo::absolutePath +
-          "), probably your path dont have a filename or ends with a slash(/)");
+        std::cout << "[Filesystem] Error while creating FileInfo instance ("
+                + FileInfo::absolutePath
+                + "), probably your path dont have a filename or ends with a slash(/)" << std::endl;
         return;
     }
 

@@ -1,6 +1,4 @@
 #include "AudioManager.hpp"
-#include "AudioListener.hpp"
-#include "AudioSource.hpp"
 
 AudioManager::AudioManager()
 {
@@ -27,7 +25,7 @@ bool AudioManager::removeSound(AudioSource* instance)
     bool deleted = false;
     for(auto i = AudioManager::sourceList.begin(); i != AudioManager::sourceList.end(); i++)
     {     
-        if ((*i) == instance)
+        if((*i) == instance)
         {
             AudioSource* temp = *i;
             temp->stop();
@@ -42,7 +40,7 @@ bool AudioManager::removeSound(AudioSource* instance)
 void AudioManager::processSounds(double frameTime)
 {
     AudioManager::accumulatedFrameTime += frameTime;
-    if (accumulatedFrameTime >= 500)
+    if(accumulatedFrameTime >= 500)
     {
         for(auto i = AudioManager::sourceList.begin(); i != AudioManager::sourceList.end(); i++)
         {

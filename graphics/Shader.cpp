@@ -1,8 +1,9 @@
 #include "Shader.hpp"
 
-#include "Debug.hpp"
-
+#include "glad/glad.h"
 #include "glm/gtc/type_ptr.hpp"
+
+#include <iostream>
 
 Shader::Shader(FileInterface* vertexFile, FileInterface* fragmentFile) {
     uint32_t vertexSize = vertexFile->getSize();
@@ -43,7 +44,7 @@ Shader::~Shader(void) {
     glDeleteProgram(Shader::program);
 }
 
-bool Shader::errorCheck(GLuint bin, int type) {
+bool Shader::errorCheck(unsigned int bin, int type) {
     int success;
     if(type != 0)
     {
@@ -86,12 +87,11 @@ bool Shader::errorCheck(GLuint bin, int type) {
             break;
     }
 
-    Debug::print(Debug::Flags::Error, Debug::Subsystem::Graphics,
-        error + "_SHADER compilation failed\n" + info);
+    std::cout << "[Graphics] " + error + "_SHADER compilation failed" << std::endl;
     return 1;
 }
 
-GLuint Shader::compile(const char* shader, int type) {
+unsigned int Shader::compile(const char* shader, int type) {
     GLuint bin = glCreateShader(type);
     glShaderSource(bin, 1, &shader, NULL);
     glCompileShader(bin);

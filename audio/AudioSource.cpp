@@ -1,11 +1,7 @@
 #include "AudioSource.hpp"
-#include "Debug.hpp"
 
-#include <chrono>
 #include <cstring>
-#include <thread>
-
-using namespace std::chrono_literals;
+#include <iostream>
 
 ALuint AudioSource::clearBuffer()
 {
@@ -48,8 +44,7 @@ AudioSource::AudioSource(FileInterface* audiofile)
     
     if(!(AudioSource::audioFile->isOpen()))
     {
-        Debug::print(Debug::Flags::Error, Debug::Subsystem::Sound,
-            "The audio file must be open for reading.");
+        std::cout << "[Audio] The audio file must be open for reading." << std::endl;
         return;
     }
 
@@ -69,8 +64,7 @@ AudioSource::AudioSource(FileInterface* audiofile)
 
             if(strncmp(reinterpret_cast<char*>(riffType), "WAVE", sizeof(riffType)))
             {
-                Debug::print(Debug::Flags::Error, Debug::Subsystem::Sound,
-                    "Invalid riff chunk: type parameter is not \"WAVE\"");
+                std::cout << "[Audio] Invalid riff chunk: type parameter is not \"WAVE\"" << std::endl;
             }
 
             readChunks++;
@@ -83,8 +77,8 @@ AudioSource::AudioSource(FileInterface* audiofile)
 
             if(formatChunk.audioFormat != 0x0001) //Format is not PCM
             {
-                Debug::print(Debug::Flags::Error, Debug::Subsystem::Sound,
-                    "Invalid audio format: internal reader only supports uncompressed PCM");
+                std::cout << "[Audio] Invalid audio format: internal reader only supports uncompressed PCM"
+                        << std::endl;
             }
 
             AudioSource::sampleRate = formatChunk.sampleRate;
@@ -148,7 +142,7 @@ void AudioSource::setOrientation(float x,  float y, float z)
 
 void AudioSource::play()
 {
-    if (AudioSource::stopped)
+    if(AudioSource::stopped)
     {
         for(int i = 0; i < 2; i++)
         {
@@ -162,16 +156,15 @@ void AudioSource::play()
     AudioSource::stopped = false;
     AudioSource::paused = false;
 }
-#include <iostream>
 
 void AudioSource::updateBuffers()
 {
-    if (!(AudioSource::playing))
+    if(!(AudioSource::playing))
     {
         return;
     }
 
-    if (AudioSource::audioFile->tell() >= AudioSource::dataEndPos)
+    if(AudioSource::audioFile->tell() >= AudioSource::dataEndPos)
     {
         return;
     }
@@ -191,7 +184,7 @@ void AudioSource::stop()
 
     alSourceStop(AudioSource::source);
 
-    for (int i = 0; i != 2; i++)
+    for(int i = 0; i != 2; i++)
     {
         AudioSource::clearBuffer();
     }

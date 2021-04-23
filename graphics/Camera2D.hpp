@@ -1,7 +1,7 @@
 #ifndef CAMERA2D_HPP
 #define CAMERA2D_HPP
 
-#include "glm/vec3.hpp"
+//#include "glm/vec3.hpp"
 #include "glm/mat4x4.hpp"
 
 class Camera2D

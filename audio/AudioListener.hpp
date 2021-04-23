@@ -7,7 +7,8 @@ class AudioListener
 {
     private:
         ALCdevice* device;
-        ALCcontext* context;            
+        ALCcontext* context;
+
     public:                
         AudioListener();
         ~AudioListener();

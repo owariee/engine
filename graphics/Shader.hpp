@@ -3,7 +3,7 @@
 
 #include "FileInterface.hpp"
 
-#include "glad/glad.h"
+
 #include "glm/mat4x4.hpp"
 
 class Shader {
@@ -14,9 +14,9 @@ class Shader {
         void setUniform(const char* name, glm::mat4 matrix);
         void setUniform(const char* name, glm::vec3 vec3);
     private:
-        GLuint program;
-        bool errorCheck(GLuint bin, int type);
-        GLuint compile(const char* shader, int type);
+        unsigned int program;
+        bool errorCheck(unsigned int bin, int type);
+        unsigned int compile(const char* shader, int type);
 };
 
 #endif//SHADER_HPP

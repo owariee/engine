@@ -3,15 +3,13 @@
 #include <cstring>
 #include <iostream>
 #include <bitset>
-
-#include "Debug.hpp"
+#include <iostream>
 
 BMPLoader::BMPLoader(FileInterface* file)
 {
     if(!(file->isOpen()))
     {
-        Debug::print(Debug::Flags::Error, Debug::Subsystem::Graphics,
-            "The BMP file must be open for reading.");
+        std::cout << "[Graphics] The BMP file must be open for reading." << std::endl;
         return;
     }
 
@@ -21,8 +19,7 @@ BMPLoader::BMPLoader(FileInterface* file)
     if (BMPLoader::bmpHeader.bitsPerPixel != 24 &&
         BMPLoader::bmpHeader.bitsPerPixel != 32)
     {
-        Debug::print(Debug::Flags::Error, Debug::Subsystem::Graphics,
-            "The engine only supports 24bpp(BGR) or 32bpp(ABGR)");
+        std::cout << "[Graphics] The engine only supports 24bpp(BGR) or 32bpp(ABGR)" << std::endl;
         return;
     }
 

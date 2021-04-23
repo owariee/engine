@@ -2,8 +2,6 @@
 #define WINDOW_HPP
 
 #include "FilesystemNative.hpp"
-#include "glad/glad.h"
-#include "GLFW/glfw3.h"
 #include "Renderer2D.hpp"
 
 #include <chrono>
@@ -73,8 +71,8 @@ class Window
         void setVsync(int fps);
     
     private:
-        GLFWwindow* window;
-        static void framebufferSizeCallback(GLFWwindow* window, int width, int height);
+        void* window;
+        static void framebufferSizeCallback(void* window, int width, int height);
         bool shouldClose;
         
         bool isGamepadConnected(int gamepad);

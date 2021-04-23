@@ -1,5 +1,7 @@
 #include "Mesh.hpp"
 
+#include "glad/glad.h"
+
 Mesh::Mesh(float* vertices, uint32_t verticeNumber, int* indices, uint32_t indiceNumber)
 : indiceNumber(indiceNumber)
 {

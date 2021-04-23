@@ -3,7 +3,7 @@
 
 #include "FileInterface.hpp"
 
-#include "glad/glad.h"
+
 
 class Texture
 {
@@ -12,7 +12,7 @@ class Texture
     public:
         Texture(FileInterface* file);
         ~Texture();
-        void use(GLenum samplerPos);
+        void use(unsigned int samplerPos);
 };
 
 #endif//TEXTURE_HPP

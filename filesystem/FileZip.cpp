@@ -1,13 +1,12 @@
 #include "FileZip.hpp"
 
-#include "Debug.hpp"
-
 #include "miniz.h"
 
 #include <filesystem>
 #include <algorithm>
 #include <string>
 #include <tuple>
+#include <iostream>
 
 Zip::EntriesMap Zip::entries;
 
@@ -20,8 +19,7 @@ Zip::Zip(const std::string& zipPath)
     mz_bool status = mz_zip_reader_init_file((mz_zip_archive*)Zip::zipArchive, zipPath.c_str(), 0);
     if (!status)
     {
-        Debug::print(Debug::Flags::Error, Debug::Subsystem::Vfs,
-          "Cannot open zip file: " + zipPath);
+        std::cout << "[Filesystem] Cannot open zip file: " + zipPath << std::endl;
     }
     
     for (mz_uint i = 0; i < mz_zip_reader_get_num_files((mz_zip_archive*)Zip::zipArchive); i++)
@@ -29,8 +27,8 @@ Zip::Zip(const std::string& zipPath)
         mz_zip_archive_file_stat file_stat;
         if (!mz_zip_reader_file_stat((mz_zip_archive*)Zip::zipArchive, i, &file_stat))
         {
-            Debug::print(Debug::Flags::Error, Debug::Subsystem::Vfs, 
-            "Cannot read entry with index: " + std::to_string(i) + " from zip archive " + zipPath);
+            std::cout << "[Filesystem] Cannot read entry with index: " 
+                    + std::to_string(i) + " from zip archive " + zipPath << std::endl;
             continue;
         }
         
@@ -82,8 +80,7 @@ FileZip::FileZip(FileInfo& fileInfo, Zip* zipFile)
 {
     if (FileZip::zipArchive)
     {
-        Debug::print(Debug::Flags::Error, Debug::Subsystem::Vfs,
-          "Cannot init zip file from empty zip archive");
+        std::cout << "[Filesystem] Cannot init zip file from empty zip archive" << std::endl;
     }
 }
 FileZip::~FileZip()
@@ -115,8 +112,7 @@ void FileZip::open(FileInterface::Mode mode)
     // TODO: ZIPFS - Add implementation of readwrite mode
     if ((mode & FileInterface::Mode::Write) ||
         (mode & FileInterface::Append)) {
-        Debug::print(Debug::Flags::Error, Debug::Subsystem::Vfs,
-          "Files from zip can be opened in read only mode");
+        std::cout << "[Filesystem] Files from zip can be opened only in read only" << std::endl;
         return;
     }
     
@@ -135,8 +131,8 @@ void FileZip::open(FileInterface::Mode mode)
     
     bool ok = FileZip::zipArchive->mapFile(absPath, FileZip::data);
     if (!ok) {
-        Debug::print(Debug::Flags::Error, Debug::Subsystem::Vfs,
-          "Cannot open file: " + absPath + " from zip: " + FileZip::zipArchive->getFileName());
+        std::cout << "[Filesystem] Cannot open file: " + absPath + " from zip: "
+                + FileZip::zipArchive->getFileName() << std::endl;
         return;
     }
     
@@ -164,6 +160,7 @@ FileInfo& FileZip::getFileInfo()
 {
     return FileZip::info;
 }
+
 uint64_t FileZip::getSize()
 {
     if (FileZip::isOpen())
@@ -173,6 +170,7 @@ uint64_t FileZip::getSize()
     
     return 0;
 }
+
 uint64_t FileZip::seek(uint64_t offset, FileInterface::Origin origin)
 {
     if (!FileZip::isOpen())
@@ -196,10 +194,12 @@ uint64_t FileZip::seek(uint64_t offset, FileInterface::Origin origin)
     
     return FileZip::tell();
 }
+
 uint64_t FileZip::tell()
 {
     return FileZip::seekPos;
 }
+
 uint64_t FileZip::read(uint8_t* buffer, uint64_t size)
 {
     if (!FileZip::isOpen())
@@ -220,6 +220,7 @@ uint64_t FileZip::read(uint8_t* buffer, uint64_t size)
     
     return maxSize;
 }
+
 uint64_t FileZip::write(uint8_t* buffer, uint64_t size)
 {
     if (!FileZip::isOpen() || FileZip::isReadOnly())

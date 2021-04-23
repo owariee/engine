@@ -1,12 +1,13 @@
 #include "Window.hpp"
 
-#include "Debug.hpp"
+#include "glad/glad.h"
 #include "GLFW/glfw3.h"
 #include "Renderer2D.hpp"
 
 #include <chrono>
 #include <thread>
 #include <cmath>
+#include <iostream>
 
 bool Window::isGamepadConnected(int gamepad)
 {
@@ -17,15 +18,15 @@ bool Window::isGamepadConnected(int gamepad)
     }
     {        
         std::string message = "Gamepad" + std::to_string(gamepad + 1) + " is unplugged.";
-        Debug::print(Debug::Flags::Warning, Debug::Subsystem::Window, message);
+        std::cout << "[Graphics] " << message << std::endl;
         return false;
     }
 }
 
-void Window::framebufferSizeCallback(GLFWwindow* window, int width, int height)
+void Window::framebufferSizeCallback(void* window, int width, int height)
 {
     glViewport(0, 0, width, height);
-    Window* winInstance = static_cast<Window*>(glfwGetWindowUserPointer(window));
+    Window* winInstance = static_cast<Window*>(glfwGetWindowUserPointer(reinterpret_cast<GLFWwindow*>(window)));
     winInstance->renderer2d->camera->updateProjectionMatrix(width, height);
 }  
 
@@ -37,9 +38,7 @@ Window::Window(const char* title, Window::Mode mode, Window::Resolution res)
 
     if (!glfwInit())
     {
-        Debug::print(Debug::Flags::Error,
-                     Debug::Subsystem::Window,
-                     "Cannot intialize Window Subsystem!");
+        std::cout << "[Graphics] Cannot intialize Window Subsystem!" << std::endl;
         return;
     }
     
@@ -63,28 +62,27 @@ Window::Window(const char* title, Window::Mode mode, Window::Resolution res)
     if (!Window::window)
     {
         glfwTerminate();
-        Debug::print(Debug::Flags::Error,
-                     Debug::Subsystem::Window,
-                     "Cannot create window!");
+        std::cout << "[Graphics] Cannot create window!" << std::endl;
         return;
     }
 
-    glfwMakeContextCurrent(Window::window);
+    glfwMakeContextCurrent(reinterpret_cast<GLFWwindow*>(Window::window));
     Window::shouldClose = false;
 
-    glfwSetFramebufferSizeCallback(window, (Window::framebufferSizeCallback));  
-    glfwSetWindowUserPointer(window, this);
+    glfwSetFramebufferSizeCallback(reinterpret_cast<GLFWwindow*>(window),
+            reinterpret_cast<void(*)(GLFWwindow*, int, int)>(Window::framebufferSizeCallback));  
+    glfwSetWindowUserPointer(reinterpret_cast<GLFWwindow*>(window), this);
     //glfwSetInputMode(Window::window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
-        Debug::print(Debug::Flags::Error, Debug::Subsystem::Graphics, "Failed to initialize GLAD");
+        std::cout << "[Graphics] Failed to initialize GLAD" << std::endl;
     }
 
     glEnable(GL_DEPTH_TEST);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-    Window::fs = new FilesystemNative("./resources/");
+    Window::fs = new FilesystemNative("./game/resources/");
     Window::renderer2d = new Renderer2D(res.width, res.height, Window::fs);
 
     Window::frameStart = std::chrono::steady_clock::now();
@@ -102,12 +100,12 @@ bool Window::isRunning()
     
     Window::frameStart = std::chrono::steady_clock::now();
 
-    glfwSwapBuffers(Window::window);
+    glfwSwapBuffers(reinterpret_cast<GLFWwindow*>(Window::window));
     glfwPollEvents();
    
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    return !(glfwWindowShouldClose(Window::window) || Window::shouldClose);
+    return !(glfwWindowShouldClose(reinterpret_cast<GLFWwindow*>(Window::window)) || Window::shouldClose);
 }
 
 void Window::close()
@@ -123,14 +121,16 @@ Window::~Window()
 Window::MousePosition Window::getMousePosition()
 {
     Window::MousePosition mousepostemp = { 0, 0 };
-    glfwGetCursorPos(Window::window, &(mousepostemp.x), &(mousepostemp.y));
+    glfwGetCursorPos(reinterpret_cast<GLFWwindow*>(Window::window),
+            &(mousepostemp.x), &(mousepostemp.y));
     return mousepostemp;
 }
 
 Window::Resolution Window::getResolution()
 {
     Window::Resolution restemp = { 0, 0 };
-    glfwGetWindowSize(Window::window, &(restemp.height),&(restemp.width));
+    glfwGetWindowSize(reinterpret_cast<GLFWwindow*>(Window::window),
+            &(restemp.height), &(restemp.width));
     return restemp;
 }
 Window::Mode Window::getMode()
@@ -141,21 +141,21 @@ Window::Mode Window::getMode()
 //Session: keyboard inputs
 bool Window::isKeyPressed(int key)
 {
-    int state = glfwGetKey(Window::window, key);
+    int state = glfwGetKey(reinterpret_cast<GLFWwindow*>(Window::window), key);
     if(state == GLFW_PRESS){ return true; }
     else { return false; }
 }
 
 bool Window::isKeyBeingPressed(int key)
 {
-    int state = glfwGetKey(Window::window, key);
+    int state = glfwGetKey(reinterpret_cast<GLFWwindow*>(Window::window), key);
     if(state == GLFW_REPEAT) { return true; }
     else { return false; }
 }
 
 bool Window::isKeyReleased(int key)
 {
-    int state = glfwGetKey(Window::window, key);
+    int state = glfwGetKey(reinterpret_cast<GLFWwindow*>(Window::window), key);
     if(state == GLFW_RELEASE) { return true; }
     else { return false; }
 }
@@ -207,19 +207,19 @@ int Window::getGamepadAxis(int gamepad, int axis)
 //Session: Mouse inputs
 bool Window::isMousePressed(int mouseButton)
 {
-    int state = glfwGetMouseButton(Window::window, mouseButton);
+    int state = glfwGetMouseButton(reinterpret_cast<GLFWwindow*>(Window::window), mouseButton);
     if(state == GLFW_PRESS) { return true;}
     else { return false; }
 }
 bool Window::isMouseBeingPressed(int mouseButton)
 {
-    int state = glfwGetMouseButton(Window::window, mouseButton);
+    int state = glfwGetMouseButton(reinterpret_cast<GLFWwindow*>(Window::window), mouseButton);
     if(state == GLFW_REPEAT) { return true;}
     else { return false; }
 }
 bool Window::isMouseReleased(int mouseButton)
 {
-    int state = glfwGetMouseButton(Window::window, mouseButton);
+    int state = glfwGetMouseButton(reinterpret_cast<GLFWwindow*>(Window::window), mouseButton);
     if(state == GLFW_RELEASE) { return true;}
     else { return false; }
 }

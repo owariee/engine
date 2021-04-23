@@ -1,5 +1,6 @@
 #include "Renderer2D.hpp"
 
+#include "glad/glad.h"
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 

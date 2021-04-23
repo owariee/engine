@@ -15,13 +15,11 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif (CMAKE_BUILD_TYPE STREQUAL "Debug")
 
 # Compile engine sub-modules
-
-add_subdirectory(debug)
 add_subdirectory(filesystem)
 add_subdirectory(audio)
 add_subdirectory(graphics)
 
-add_library(engine STATIC)
-target_link_libraries(engine PUBLIC debug_lib graphics audio filesystem)
+add_library(engine INTERFACE)
+target_link_libraries(engine INTERFACE graphics audio filesystem)
 
 add_subdirectory(game)
