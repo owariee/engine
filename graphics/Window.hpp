@@ -1,8 +1,10 @@
 #ifndef WINDOW_HPP
 #define WINDOW_HPP
 
+#include "FilesystemNative.hpp"
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
+#include "Renderer2D.hpp"
 
 #include <chrono>
 
@@ -45,6 +47,8 @@ class Window
                       DpadLeft
                      } GamepadButtons;
         typedef enum {Button1, Button2, Button3, Button4, Button5, Button6,Button7, Button8} MouseButtons;
+        Renderer2D* renderer2d;
+        FilesystemNative* fs;
 
         Window(const char* title, Window::Mode mode, Window::Resolution res);
         ~Window();
@@ -69,8 +73,10 @@ class Window
         void setVsync(int fps);
     
     private:
-        bool shouldClose;
         GLFWwindow* window;
+        static void framebufferSizeCallback(GLFWwindow* window, int width, int height);
+        bool shouldClose;
+        
         bool isGamepadConnected(int gamepad);
         Window::Mode mode;
         std::chrono::time_point<std::chrono::steady_clock> frameStart;

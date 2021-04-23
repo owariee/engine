@@ -1,6 +1,8 @@
 #include "Window.hpp"
 
 #include "Debug.hpp"
+#include "GLFW/glfw3.h"
+#include "Renderer2D.hpp"
 
 #include <chrono>
 #include <thread>
@@ -19,6 +21,13 @@ bool Window::isGamepadConnected(int gamepad)
         return false;
     }
 }
+
+void Window::framebufferSizeCallback(GLFWwindow* window, int width, int height)
+{
+    glViewport(0, 0, width, height);
+    Window* winInstance = static_cast<Window*>(glfwGetWindowUserPointer(window));
+    winInstance->renderer2d->camera->updateProjectionMatrix(width, height);
+}  
 
 Window::Window(const char* title, Window::Mode mode, Window::Resolution res)
 : mode(mode)
@@ -63,12 +72,20 @@ Window::Window(const char* title, Window::Mode mode, Window::Resolution res)
     glfwMakeContextCurrent(Window::window);
     Window::shouldClose = false;
 
+    glfwSetFramebufferSizeCallback(window, (Window::framebufferSizeCallback));  
+    glfwSetWindowUserPointer(window, this);
+    //glfwSetInputMode(Window::window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         Debug::print(Debug::Flags::Error, Debug::Subsystem::Graphics, "Failed to initialize GLAD");
     }
 
+    glEnable(GL_DEPTH_TEST);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+    Window::fs = new FilesystemNative("./resources/");
+    Window::renderer2d = new Renderer2D(res.width, res.height, Window::fs);
 
     Window::frameStart = std::chrono::steady_clock::now();
 }
@@ -82,15 +99,13 @@ bool Window::isRunning()
         std::this_thread::sleep_for(Window::vsyncMs - Window::frameTime);
         Window::frameTime = Window::vsyncMs;
     }
-
-    glfwSetInputMode(Window::window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     
     Window::frameStart = std::chrono::steady_clock::now();
 
     glfwSwapBuffers(Window::window);
     glfwPollEvents();
    
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     return !(glfwWindowShouldClose(Window::window) || Window::shouldClose);
 }

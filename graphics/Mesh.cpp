@@ -24,7 +24,7 @@ Mesh::Mesh(float* vertices, uint32_t verticeNumber, int* indices, uint32_t indic
     glBindBuffer(GL_ARRAY_BUFFER, 0); 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    Mesh::modelMatrix = glm::mat4();
+    Mesh::modelMatrix = glm::mat4(1.0f);
 }
 
 Mesh::~Mesh()

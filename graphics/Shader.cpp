@@ -30,8 +30,8 @@ Shader::Shader(FileInterface* vertexFile, FileInterface* fragmentFile) {
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    delete vertexSource;
-    delete fragmentSource;
+    delete[] vertexSource;
+    delete[] fragmentSource;
     
     if (Shader::errorCheck(Shader::program, 0)) 
     {
@@ -110,4 +110,10 @@ void Shader::setUniform(const char* name, glm::mat4 matrix)
 {
     unsigned int uniformLocation = glGetUniformLocation(Shader::program, name);
     glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(matrix));
+}
+
+void Shader::setUniform(const char* name, glm::vec3 vec3)
+{
+    unsigned int uniformLocation = glGetUniformLocation(Shader::program, name);
+    glUniform3fv(uniformLocation, 1, glm::value_ptr(vec3));
 }

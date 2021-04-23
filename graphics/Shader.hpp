@@ -12,6 +12,7 @@ class Shader {
         ~Shader(void);
         void use();
         void setUniform(const char* name, glm::mat4 matrix);
+        void setUniform(const char* name, glm::vec3 vec3);
     private:
         GLuint program;
         bool errorCheck(GLuint bin, int type);

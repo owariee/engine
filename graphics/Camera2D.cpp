@@ -29,23 +29,8 @@ glm::mat4 Camera2D::getViewMatrix()
         Camera2D::cameraUp);
 }
 
-void Camera2D::processInput(Window* win)
+void Camera2D::updateProjectionMatrix(int width, int height)
 {
-    float velocity = 0.5f * win->getFrameTime();
-    if (win->isKeyPressed(Window::Keys::W))
-    {
-        Camera2D::cameraPosition -= Camera2D::cameraUp * velocity;     
-    }
-    if (win->isKeyPressed(Window::Keys::S))
-    {
-        Camera2D::cameraPosition += Camera2D::cameraUp * velocity;     
-    }
-    if (win->isKeyPressed(Window::Keys::A))
-    {
-        Camera2D::cameraPosition -= Camera2D::cameraRight * velocity;     
-    }
-    if (win->isKeyPressed(Window::Keys::D))
-    {
-        Camera2D::cameraPosition += Camera2D::cameraRight * velocity;     
-    }
+    Camera2D::projection = glm::ortho(
+        0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f, 0.1f, 100.0f);
 }
