@@ -3,7 +3,7 @@
 
 #include "FileInterface.hpp"
 
-#include <bits/types/FILE.h>
+//#include <bits/types/FILE.h>
 #include <vector>
 
 class LineArgumentParser

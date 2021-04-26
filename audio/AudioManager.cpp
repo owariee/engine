@@ -1,6 +1,7 @@
 #include "AudioManager.hpp"
 
 AudioManager::AudioManager()
+: accumulatedFrameTime(0)
 {
     
 }
@@ -40,12 +41,13 @@ bool AudioManager::removeSound(AudioSource* instance)
 void AudioManager::processSounds(double frameTime)
 {
     AudioManager::accumulatedFrameTime += frameTime;
-    if(accumulatedFrameTime >= 500)
+    if(AudioManager::accumulatedFrameTime >= 500)
     {
         for(auto i = AudioManager::sourceList.begin(); i != AudioManager::sourceList.end(); i++)
         {
             AudioSource* temp = *i;
             temp->updateBuffers();
         }
+        AudioManager::accumulatedFrameTime = 0;
     }
 }

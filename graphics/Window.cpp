@@ -9,20 +9,6 @@
 #include <cmath>
 #include <iostream>
 
-bool Window::isGamepadConnected(int gamepad)
-{
-    int gamepadConected = glfwJoystickPresent(gamepad);
-    if(gamepadConected == 1)
-    {
-        return true;
-    }
-    {        
-        std::string message = "Gamepad" + std::to_string(gamepad + 1) + " is unplugged.";
-        std::cout << "[Graphics] " << message << std::endl;
-        return false;
-    }
-}
-
 void Window::framebufferSizeCallback(void* window, int width, int height)
 {
     glViewport(0, 0, width, height);
@@ -118,14 +104,6 @@ Window::~Window()
     glfwTerminate();
 }
 
-Window::MousePosition Window::getMousePosition()
-{
-    Window::MousePosition mousepostemp = { 0, 0 };
-    glfwGetCursorPos(reinterpret_cast<GLFWwindow*>(Window::window),
-            &(mousepostemp.x), &(mousepostemp.y));
-    return mousepostemp;
-}
-
 Window::Resolution Window::getResolution()
 {
     Window::Resolution restemp = { 0, 0 };
@@ -136,92 +114,6 @@ Window::Resolution Window::getResolution()
 Window::Mode Window::getMode()
 {
     return Window::mode;
-}
-
-//Session: keyboard inputs
-bool Window::isKeyPressed(int key)
-{
-    int state = glfwGetKey(reinterpret_cast<GLFWwindow*>(Window::window), key);
-    if(state == GLFW_PRESS){ return true; }
-    else { return false; }
-}
-
-bool Window::isKeyBeingPressed(int key)
-{
-    int state = glfwGetKey(reinterpret_cast<GLFWwindow*>(Window::window), key);
-    if(state == GLFW_REPEAT) { return true; }
-    else { return false; }
-}
-
-bool Window::isKeyReleased(int key)
-{
-    int state = glfwGetKey(reinterpret_cast<GLFWwindow*>(Window::window), key);
-    if(state == GLFW_RELEASE) { return true; }
-    else { return false; }
-}
-
-//Session: gamepad entries
-bool Window::isGamepadButtonPressed(int gamepad, int button)
-{
-    if(Window::isGamepadConnected(gamepad))
-    {
-        int count = 0;
-        const  unsigned  char * buttons = glfwGetJoystickButtons ( gamepad , & count);
-        if(buttons[button] == GLFW_PRESS) { return true; }
-        else { return false; }
-    }
-    else{ return false; } 
-}
-bool Window::isGamepadButtonBeingPressed(int gamepad, int button)
-{    
-    if(Window::isGamepadConnected(gamepad))
-    {
-        int count = 0;
-        const  unsigned  char * buttons = glfwGetJoystickButtons ( gamepad , & count);
-        if(buttons[button] == GLFW_REPEAT) { return true; }
-        else { return false; }
-    }
-    else{ return false; }
-}
-bool Window::isGamepadButtonReleased(int gamepad, int button)
-{     
-    if(Window::isGamepadConnected(gamepad))
-    {
-        int count = 0;
-        const  unsigned  char * buttons = glfwGetJoystickButtons ( gamepad , & count);
-        if(buttons[button] == GLFW_RELEASE) { return true; }
-        else { return false; }
-    }
-    else{ return false; }
-}
-int Window::getGamepadAxis(int gamepad, int axis)
-{    
-    if(Window::isGamepadConnected(gamepad))
-    {
-        int count = 0;
-        const float* jaxis = glfwGetJoystickAxes(gamepad, & count);
-        return jaxis[axis];
-    }
-    else{ return false; }
-}
-//Session: Mouse inputs
-bool Window::isMousePressed(int mouseButton)
-{
-    int state = glfwGetMouseButton(reinterpret_cast<GLFWwindow*>(Window::window), mouseButton);
-    if(state == GLFW_PRESS) { return true;}
-    else { return false; }
-}
-bool Window::isMouseBeingPressed(int mouseButton)
-{
-    int state = glfwGetMouseButton(reinterpret_cast<GLFWwindow*>(Window::window), mouseButton);
-    if(state == GLFW_REPEAT) { return true;}
-    else { return false; }
-}
-bool Window::isMouseReleased(int mouseButton)
-{
-    int state = glfwGetMouseButton(reinterpret_cast<GLFWwindow*>(Window::window), mouseButton);
-    if(state == GLFW_RELEASE) { return true;}
-    else { return false; }
 }
 
 void* Window::getFuncProcAddress()
