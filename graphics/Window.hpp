@@ -3,12 +3,12 @@
 
 #include "FilesystemNative.hpp"
 #include "Renderer2D.hpp"
-#include "Input.hpp"
 
 #include <chrono>
 
 class Window
 {
+    friend class Input;
     public:
         typedef enum {Fullscreen, Windowed, Borderless} Mode;
         typedef struct { int width, height; } Resolution;
@@ -32,8 +32,7 @@ class Window
         Window::Mode mode;
         std::chrono::time_point<std::chrono::steady_clock> frameStart;
         std::chrono::duration<double, std::milli> frameTime;
-        std::chrono::duration<double, std::milli> vsyncMs;
-        friend class Input;
+        std::chrono::duration<double, std::milli> vsyncMs;        
 };
 
 #endif//WINDOW_HPP

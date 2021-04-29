@@ -6,10 +6,10 @@
 class Input
 {
     protected:
-        void* window;
+        void** window;
         bool hasAWindow();
     public:
-        Input(Window* window);
+        Input(Window** window);
         ~Input();
 };
 

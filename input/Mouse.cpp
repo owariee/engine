@@ -2,7 +2,7 @@
 
 #include "GLFW/glfw3.h"
 
-Mouse::Mouse(Window* window)
+Mouse::Mouse(Window** window)
 :Input(window)
 {
     
@@ -20,7 +20,7 @@ Mouse::Position Mouse::getPosition()
     }
     return mousepostemp;
 }
-bool Mouse::buttonPressed(Mouse::Buttons button)
+bool Mouse::getButtonClick(Mouse::Buttons button)
 {
     if(Mouse::hasAWindow()){
         int state = glfwGetMouseButton(reinterpret_cast<GLFWwindow*>(Mouse::window), button);
@@ -30,17 +30,7 @@ bool Mouse::buttonPressed(Mouse::Buttons button)
     }
     return false;
 }
-bool Mouse::buttonBeingPressed(Mouse::Buttons button)
-{
-    if(Mouse::hasAWindow()){
-        int state = glfwGetMouseButton(reinterpret_cast<GLFWwindow*>(Mouse::window), button);
-        if(state == GLFW_REPEAT) { 
-            return true;
-        }
-    }
-    return false;
-}
-bool Mouse::buttonReleased(Mouse::Buttons button)
+bool Mouse::getButtonUnclick(Mouse::Buttons button)
 {
     if(Mouse::hasAWindow()){
         int state = glfwGetMouseButton(reinterpret_cast<GLFWwindow*>(Mouse::window), button);

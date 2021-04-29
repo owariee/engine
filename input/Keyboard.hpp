@@ -4,10 +4,9 @@
 #include "Window.hpp"
 #include "Input.hpp"
 
-
-
 class Keyboard : public Input
-{        
+{
+    private:
     public:
         typedef enum {Unknow = -1, Space = 32, Apostrophe = 39, Comma = 44, Minus = 45,
                     Period = 46, Slash = 47, Number0 = 48, Number1 = 49, Number2 =50,
@@ -32,11 +31,10 @@ class Keyboard : public Input
                     LeftControl = 341, LeftAlt = 342, LeftSuper = 343, RightShift = 344,
                     RighControl = 345, RightAlt = 346, RightSuper = 347, Menu = 348
                     } Keys;
-        Keyboard(Window* window);
+        Keyboard(Window** window);
         ~Keyboard();
-        bool keyPressed(Keyboard::Keys key);
-        bool keyBeingPressed(Keyboard::Keys key);
-        bool keyReleased(Keyboard::Keys key);
+        bool getKeyDown(Keyboard::Keys key);
+        bool getKeyUp(Keyboard::Keys key);
 };
 
 #endif //KEYBOARD_HPP
