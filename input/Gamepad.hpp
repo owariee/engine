@@ -17,10 +17,15 @@ class Gamepad
         ~Gamepad();
         int getAxis(Gamepad::Axis axis);
         bool getButtonDown(Gamepad::Buttons button);
+        bool getButton(Gamepad::Buttons button);
         bool getButtonUp(Gamepad::Buttons button);
     private:
-        Gamepad::Ids id;        
+        Gamepad::Ids id;
+        bool clicked[15];
+        bool noClicked[15];
         bool isConnected();
+        void internalButtonDown(Gamepad::Buttons button);
+        void internalButtonUp(Gamepad::Buttons button);
 };
 
 #endif

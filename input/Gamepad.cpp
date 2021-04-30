@@ -6,6 +6,10 @@
 Gamepad::Gamepad(Ids gamepadID)
 :id(gamepadID)
 {
+    for (int i = 0; i < 15; i++) {
+        Gamepad::clicked[i] = false;
+        Gamepad::noClicked[i] = false;
+    }
 }
 Gamepad::~Gamepad()
 {
@@ -20,6 +24,30 @@ bool Gamepad::isConnected()
     std::cout << "[Input] " << message << std::endl;
     return false;
 }
+void Gamepad::internalButtonDown(Gamepad::Buttons button)
+{
+    if (Gamepad::isConnected()) {
+        int count;
+        const unsigned char* buttons = glfwGetJoystickButtons(Gamepad::id, &count);
+        if (buttons[button] == GLFW_PRESS) {
+            if (!Gamepad::noClicked[button]) {
+                Gamepad::noClicked[button] = true;
+            }
+        }
+    }
+}
+void Gamepad::internalButtonUp(Gamepad::Buttons button)
+{
+    if (Gamepad::isConnected()) {
+        int count;
+        const unsigned char* buttons = glfwGetJoystickButtons(Gamepad::id, &count);
+        if (buttons[button] == GLFW_RELEASE) {
+            if (Gamepad::clicked[button]) {
+                Gamepad::clicked[button] = false;
+            }
+        }
+    }
+}
 int Gamepad::getAxis(Gamepad::Axis axis)
 {
     if(Gamepad::isConnected()){
@@ -31,10 +59,26 @@ int Gamepad::getAxis(Gamepad::Axis axis)
 }
 bool Gamepad::getButtonDown(Gamepad::Buttons button)
 {
+    bool result = false;
     if(Gamepad::isConnected()){
         int count;
         const unsigned char* buttons = glfwGetJoystickButtons(Gamepad::id, &count);
         if(buttons[button] == GLFW_PRESS){
+            if (!Gamepad::clicked[button]) {
+                result = true;
+                Gamepad::clicked[button] = true;
+            }
+        }
+    }
+    Gamepad::internalButtonUp(button);
+    return result;
+}
+bool Gamepad::getButton(Gamepad::Buttons button)
+{
+    if (Gamepad::isConnected()) {
+        int count;
+        const unsigned char* buttons = glfwGetJoystickButtons(Gamepad::id, &count);
+        if (buttons[button] == GLFW_PRESS) {
             return true;
         }
     }
@@ -42,12 +86,17 @@ bool Gamepad::getButtonDown(Gamepad::Buttons button)
 }
 bool Gamepad::getButtonUp(Gamepad::Buttons button)
 {
+    Gamepad::internalButtonDown(button);
+    bool result = false;
     if(Gamepad::isConnected()){
         int count;
         const unsigned char* buttons = glfwGetJoystickButtons(Gamepad::id, &count);
         if(buttons[button] == GLFW_RELEASE){
-            return true;
+            if (Gamepad::noClicked[button]) {
+                result = true;
+                Gamepad::noClicked[button] = false;
+            }
         }
     }
-    return false;
+    return result;
 }
