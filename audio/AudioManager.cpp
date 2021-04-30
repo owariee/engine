@@ -1,6 +1,9 @@
 #include "AudioManager.hpp"
 
+#include <thread>
+
 AudioManager::AudioManager()
+: accumulatedFrameTime(0)
 {
     
 }
@@ -37,15 +40,17 @@ bool AudioManager::removeSound(AudioSource* instance)
     return deleted;
 }
 
-void AudioManager::processSounds(double frameTime)
+void AudioManager::processSounds()
 {
-    AudioManager::accumulatedFrameTime += frameTime;
-    if(accumulatedFrameTime >= 500)
+    for(;;)
     {
+        auto timeStart = std::chrono::steady_clock::now();
         for(auto i = AudioManager::sourceList.begin(); i != AudioManager::sourceList.end(); i++)
         {
             AudioSource* temp = *i;
             temp->updateBuffers();
         }
+        auto timeFinal = (std::chrono::steady_clock::now() - timeStart).count();
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000 - timeFinal));
     }
 }
