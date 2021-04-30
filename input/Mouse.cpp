@@ -7,7 +7,7 @@ Mouse::Mouse(Window** window)
 {
     for(int i = 0; i < 8; i++){
         clicked[i] = false;
-        noClicked[i] = true;
+        noClicked[i] = false;
     }
 }
 Mouse::~Mouse()

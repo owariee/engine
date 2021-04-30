@@ -4,9 +4,10 @@
 #include "Window.hpp"
 #include "Input.hpp"
 
+#include <map>
+
 class Keyboard : public Input
 {
-    private:
     public:
         typedef enum {Unknow = -1, Space = 32, Apostrophe = 39, Comma = 44, Minus = 45,
                     Period = 46, Slash = 47, Number0 = 48, Number1 = 49, Number2 =50,
@@ -34,7 +35,13 @@ class Keyboard : public Input
         Keyboard(Window** window);
         ~Keyboard();
         bool getKeyDown(Keyboard::Keys key);
+        bool getKey(Keyboard::Keys key);
         bool getKeyUp(Keyboard::Keys key);
+    private:
+        void internalKeyDown(Keyboard::Keys key);
+        void internalKeyUp(Keyboard::Keys key);
+        std::map<int, bool> clicked;
+        std::map<int, bool> noClicked;
 };
 
 #endif //KEYBOARD_HPP
