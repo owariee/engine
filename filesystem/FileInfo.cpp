@@ -3,9 +3,11 @@
 #include <iostream>
 
 FileInfo::FileInfo(const std::string& filePath, bool isDir)
+: absolutePath(filePath)
+, dir(isDir)
 {
-    FileInfo::absolutePath = filePath;
-    FileInfo::dir = isDir;
+    //FileInfo::absolutePath = filePath;
+    //FileInfo::dir = isDir;
 
     std::size_t found = FileInfo::absolutePath.rfind("/");
 
