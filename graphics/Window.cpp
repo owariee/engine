@@ -137,3 +137,8 @@ void Window::setVsync(int fps)
     int idealFrameTime = static_cast<int>(std::roundf((1.0f/fps)*1000000));
     Window::vsyncMs = std::chrono::microseconds(idealFrameTime);
 }
+
+void* Window::getWindowId()
+{
+    return Window::window;
+}

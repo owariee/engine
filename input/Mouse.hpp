@@ -12,8 +12,14 @@ class Mouse : public Input
         Mouse(Window** window);
         ~Mouse();
         Mouse::Position getPosition();     
-        bool getButtonClick(Mouse::Buttons button);
-        bool getButtonUnclick(Mouse::Buttons button);
+        bool getClickDown(Mouse::Buttons button);
+        bool getClick(Mouse::Buttons button);
+        bool getClickUp(Mouse::Buttons button);
+    private:
+        bool clicked[8];
+        bool noClicked[8];        
+        void internalClickDown(Mouse::Buttons button);
+        void internalClickUp(Mouse::Buttons button);
 };
 
 #endif //MOUSE_HPP

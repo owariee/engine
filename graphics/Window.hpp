@@ -8,7 +8,6 @@
 
 class Window
 {
-    friend class Input;
     public:
         typedef enum {Fullscreen, Windowed, Borderless} Mode;
         typedef struct { int width, height; } Resolution;
@@ -24,6 +23,7 @@ class Window
         void* getFuncProcAddress();
         double getFrameTime();
         void setVsync(int fps);
+        void* getWindowId();
     
     private:
         void* window;
