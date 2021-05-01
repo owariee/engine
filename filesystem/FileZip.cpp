@@ -5,22 +5,7 @@
 #include <string>
 #include <tuple>
 #include <iostream>
-
-FileZip::FileZip(FileInfo& fileInfo)
-: info(fileInfo)
-, readOnly(true)
-, opened(false)
-, hasChanges(false)
-, seekPos(0)
-, mode(0)
-{
-    
-}
-
-FileZip::~FileZip()
-{
-    
-}
+#include <cstring>
 
 bool FileZip::isOpen()
 {
@@ -32,21 +17,14 @@ bool FileZip::isReadOnly()
     return FileZip::readOnly;
 }
 
+FileInfo& FileZip::getFileInfo()
+{
+    return FileZip::info;
+}
+
 void FileZip::close()
 {   
-    if(!FileZip::isOpen())
-    {
-        return;
-    }
-
     FileZip::opened = false;
-
-    if(FileZip::isReadOnly() || !FileZip::hasChanges)
-    {
-        return;
-    }
-    
-    // save modifications using the FilesystemZip instance
 }
 
 void FileZip::open(FileInterface::Mode mode)
@@ -56,33 +34,44 @@ void FileZip::open(FileInterface::Mode mode)
         return;
     }
 
-    FileZip::opened = true;
-    
-    FileZip::mode = mode;
-    FileZip::readOnly = true;
     FileZip::seek(0, FileInterface::Origin::Begin);
 
     if(mode & FileInterface::Mode::Write)
     {
-        FileZip::readOnly = false;
+        if(FileZip::readOnly)
+        {
+            std::cout << "[FileZip] You are trying to open in Write mode an Zip file that is read only" << std::endl;
+            return;
+        }
     }
 
     if(mode & FileInterface::Mode::Append)
     {
-        FileZip::readOnly = false;
+        if(FileZip::readOnly)
+        {
+            std::cout << "[FileZip] You are trying to open in Append mode an Zip file that is read only" << std::endl;
+            return;
+        }
         FileZip::seek(0, FileInterface::Origin::End);
     }
 
     if(mode & FileInterface::Mode::Truncate)
     {
+        if(FileZip::readOnly)
+        {
+            std::cout << "[FileZip] You are trying to open in Truncate mode an Zip file that is read only" << std::endl;
+            return;
+        }
         FileZip::data.clear();
-        FileZip::seek(0, FileInterface::Origin::Begin);
     }
+
+    FileZip::mode = mode;
+    FileZip::opened = true;    
 }
 
-FileInfo& FileZip::getFileInfo()
+uint8_t FileZip::getMode()
 {
-    return FileZip::info;
+    return FileZip::mode;
 }
 
 uint64_t FileZip::getSize()
@@ -127,7 +116,7 @@ uint64_t FileZip::tell()
 
 uint64_t FileZip::read(uint8_t* buffer, uint64_t size)
 {
-    if(!FileZip::isOpen())
+    if(!FileZip::isOpen() || !(mode & FileInterface::Mode::Read))
     {
         return 0;
     }
@@ -140,7 +129,11 @@ uint64_t FileZip::read(uint8_t* buffer, uint64_t size)
 
 uint64_t FileZip::write(uint8_t* buffer, uint64_t size)
 {
-    if(!FileZip::isOpen() || FileZip::isReadOnly())
+    if(!FileZip::isOpen() ||
+        FileZip::isReadOnly() ||
+        (!(mode & FileInterface::Mode::Write) &&
+         !(mode & FileInterface::Mode::Append) &&
+         !(mode & FileInterface::Mode::Truncate)))
     {
         return 0;
     }
@@ -156,4 +149,20 @@ uint64_t FileZip::write(uint8_t* buffer, uint64_t size)
     FileZip::seek(size, FileInterface::Origin::Middle);
     FileZip::hasChanges = true;
     return size;
+}
+
+FileZip::FileZip(FileInfo& fileInfo, bool readOnly)
+: info(fileInfo)
+, readOnly(readOnly)
+, opened(false)
+, hasChanges(false)
+, seekPos(0)
+, mode(0)
+{
+    
+}
+
+FileZip::~FileZip()
+{
+    
 }
