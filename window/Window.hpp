@@ -3,6 +3,8 @@
 
 #include "FilesystemNative.hpp"
 #include "Renderer2D.hpp"
+#include "input/Keyboard.hpp"
+#include "input/Mouse.hpp"
 
 #include <chrono>
 
@@ -23,8 +25,8 @@ class Window
         void* getFuncProcAddress();
         double getFrameTime();
         void setVsync(int fps);
-        void* getWindowId();
-    
+        Keyboard* keyboard;
+        Mouse* mouse;
     private:
         void* window;
         static void framebufferSizeCallback(void* window, int width, int height);

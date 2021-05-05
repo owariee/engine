@@ -1,13 +1,11 @@
 #ifndef KEYBOARD_HPP
 #define KEYBOARD_HPP
 
-#include "Window.hpp"
-#include "Input.hpp"
-
 #include <map>
 
-class Keyboard : public Input
+class Keyboard
 {
+    friend class Window;
     public:
         typedef enum {Unknow = -1, Space = 32, Apostrophe = 39, Comma = 44, Minus = 45,
                     Period = 46, Slash = 47, Number0 = 48, Number1 = 49, Number2 =50,
@@ -31,9 +29,7 @@ class Keyboard : public Input
                     KPAdd = 334, KPEnter = 335, KPEqual = 336, LeftShift = 340,
                     LeftControl = 341, LeftAlt = 342, LeftSuper = 343, RightShift = 344,
                     RighControl = 345, RightAlt = 346, RightSuper = 347, Menu = 348
-                    } Keys;
-        Keyboard(Window** window);
-        ~Keyboard();
+                    } Keys;        
         bool getKeyDown(Keyboard::Keys key);
         bool getKey(Keyboard::Keys key);
         bool getKeyUp(Keyboard::Keys key);
@@ -42,6 +38,9 @@ class Keyboard : public Input
         void internalKeyUp(Keyboard::Keys key);
         std::map<int, bool> clicked;
         std::map<int, bool> noClicked;
+        void* window;
+        Keyboard(void* window);
+        ~Keyboard();
 };
 
 #endif //KEYBOARD_HPP

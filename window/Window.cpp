@@ -14,6 +14,7 @@ void Window::framebufferSizeCallback(void* window, int width, int height)
     glViewport(0, 0, width, height);
     Window* winInstance = static_cast<Window*>(glfwGetWindowUserPointer(reinterpret_cast<GLFWwindow*>(window)));
     winInstance->renderer2d->camera->updateProjectionMatrix(width, height);
+    
 }  
 
 Window::Window(const char* title, Window::Mode mode, Window::Resolution res)
@@ -72,6 +73,8 @@ Window::Window(const char* title, Window::Mode mode, Window::Resolution res)
     Window::renderer2d = new Renderer2D(res.width, res.height, Window::fs);
 
     Window::frameStart = std::chrono::steady_clock::now();
+    Window::keyboard = new Keyboard(Window::window);
+    Window::mouse = new Mouse(Window::window);
 }
 
 bool Window::isRunning()
@@ -102,6 +105,8 @@ void Window::close()
 Window::~Window()
 {
     glfwTerminate();
+    delete Window::keyboard;
+    delete Window::mouse;
 }
 
 Window::Resolution Window::getResolution()
@@ -136,9 +141,4 @@ void Window::setVsync(int fps)
     
     int idealFrameTime = static_cast<int>(std::roundf((1.0f/fps)*1000000));
     Window::vsyncMs = std::chrono::microseconds(idealFrameTime);
-}
-
-void* Window::getWindowId()
-{
-    return Window::window;
 }

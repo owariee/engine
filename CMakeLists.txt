@@ -18,9 +18,9 @@ endif (CMAKE_BUILD_TYPE STREQUAL "Debug")
 add_subdirectory(filesystem)
 add_subdirectory(audio)
 add_subdirectory(graphics)
-add_subdirectory(input)
+add_subdirectory(window)
 
 add_library(engine INTERFACE)
-target_link_libraries(engine INTERFACE graphics audio filesystem input)
+target_link_libraries(engine INTERFACE graphics audio filesystem window)
 
 add_subdirectory(game)

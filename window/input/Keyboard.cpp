@@ -2,8 +2,8 @@
 
 #include "GLFW/glfw3.h"
 
-Keyboard::Keyboard(Window** window)
-    :Input(window)
+Keyboard::Keyboard(void* window)
+    :window(window)
 {
     Keyboard::clicked[Keyboard::Unknow] = false;
     Keyboard::noClicked[Keyboard::Unknow] = false;
@@ -247,36 +247,30 @@ Keyboard::~Keyboard()
 }
 void Keyboard::internalKeyDown(Keyboard::Keys key)
 {
-    if (Keyboard::hasAWindow()) {
-        int state = glfwGetKey(((GLFWwindow*)(((Window*)(*(Keyboard::window)))->getWindowId())), key);
-        if (state == GLFW_PRESS) {
-            if (!Keyboard::noClicked[key]) {
-                Keyboard::noClicked[key] = true;
-            }
+    int state = glfwGetKey(reinterpret_cast<GLFWwindow*>(Keyboard::window), key);
+    if (state == GLFW_PRESS) {
+        if (!Keyboard::noClicked[key]) {
+            Keyboard::noClicked[key] = true;
         }
     }
 }
 void Keyboard::internalKeyUp(Keyboard::Keys key)
 {
-    if (Keyboard::hasAWindow()) {
-        int state = glfwGetKey(((GLFWwindow*)(((Window*)(*(Keyboard::window)))->getWindowId())), key);
-        if (state == GLFW_RELEASE) {
-            if (Keyboard::clicked[key]) {
-                Keyboard::clicked[key] = false;
-            }
+    int state = glfwGetKey(reinterpret_cast<GLFWwindow*>(Keyboard::window), key);
+    if (state == GLFW_RELEASE) {
+        if (Keyboard::clicked[key]) {
+            Keyboard::clicked[key] = false;
         }
     }
 }
 bool Keyboard::getKeyDown(Keyboard::Keys key)
 {
     bool result = false;
-    if(Keyboard::hasAWindow()){
-        int state = glfwGetKey(((GLFWwindow*)(((Window*)(*(Keyboard::window)))->getWindowId())), key);
-        if(state == GLFW_PRESS) {
-            if (!Keyboard::clicked[key]) {
-                result = true;
-                Keyboard::clicked[key] = true;
-            }
+    int state = glfwGetKey(reinterpret_cast<GLFWwindow*>(Keyboard::window), key);
+    if(state == GLFW_PRESS) {
+        if (!Keyboard::clicked[key]) {
+            result = true;
+            Keyboard::clicked[key] = true;
         }
     }
     Keyboard::internalKeyUp(key);
@@ -284,7 +278,7 @@ bool Keyboard::getKeyDown(Keyboard::Keys key)
 }
 bool Keyboard::getKey(Keyboard::Keys key)
 {
-    int state = glfwGetKey(((GLFWwindow*)(((Window*)(*(Keyboard::window)))->getWindowId())), key);
+    int state = glfwGetKey(reinterpret_cast<GLFWwindow*>(Keyboard::window), key);
     if (state == GLFW_PRESS) {
         return true;
     }
@@ -294,13 +288,11 @@ bool Keyboard::getKeyUp(Keyboard::Keys key)
 {
     Keyboard::internalKeyDown(key);
     bool result = false;
-    if (Keyboard::hasAWindow()) {
-        int state = glfwGetKey(((GLFWwindow*)(((Window*)(*(Keyboard::window)))->getWindowId())), key);
-        if (state == GLFW_RELEASE) {
-            if (Keyboard::noClicked[key]) {
-                result = true;
-                Keyboard::noClicked[key] = false;
-            }
+    int state = glfwGetKey(reinterpret_cast<GLFWwindow*>(Keyboard::window), key);
+    if (state == GLFW_RELEASE) {
+        if (Keyboard::noClicked[key]) {
+            result = true;
+            Keyboard::noClicked[key] = false;
         }
     }
     return result;
