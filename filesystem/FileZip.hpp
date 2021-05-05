@@ -2,6 +2,7 @@
 #define FILEZIP_HPP
 
 #include "FileInterface.hpp"
+#include "FilesystemZip.hpp"
 
 #include <cstdint>
 #include <map>
@@ -9,29 +10,10 @@
 #include <tuple>
 #include <vector>
 
-class Zip
-{
-public:
-    Zip(const std::string& zipPath);
-    ~Zip();
-    
-    bool mapFile(const std::string& filename, std::vector<uint8_t>& data);
-    const std::string& getFileName() const;
-    
-    bool isReadOnly() const;
-    
-private:
-    std::string fileName;
-    void* zipArchive;   
-    typedef std::map<std::string, std::tuple<uint32_t, uint64_t>> EntriesMap;
-    static Zip::EntriesMap entries;
-};
-
 class FileZip final : public FileInterface
 {
-        friend class FilesystemZip;
     public:
-        FileZip(FileInfo& fileInfo, Zip* zipFile);
+        FileZip(FileInfo& fileInfo);
         ~FileZip();
 
         virtual bool isOpen() override;
@@ -48,7 +30,6 @@ class FileZip final : public FileInterface
         virtual uint64_t write(uint8_t* buffer, uint64_t size) override;
 
     private:
-        Zip* zipArchive;
         std::vector<uint8_t> data;
         FileInfo info;
         bool readOnly;
@@ -56,6 +37,8 @@ class FileZip final : public FileInterface
         bool hasChanges;
         uint64_t seekPos;
         int mode;
+
+        friend class FilesystemZip;
 };
 
-#endif//FILEZIP_HP
+#endif//FILEZIP_HPP

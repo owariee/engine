@@ -6,8 +6,9 @@
 #include <filesystem>
 #include <memory>
 #include <algorithm>
+#include <iostream>
 
-std::unordered_map<std::string, Zip*> FilesystemZip::openedZips;
+//std::unordered_map<std::string, Zip*> FilesystemZip::openedZips;
 
 FilesystemZip::FilesystemZip(std::string zipPath, std::string basePath)
 : zipPath(zipPath)
@@ -28,23 +29,50 @@ void FilesystemZip::initialize()
     {
         return;
     }
+
+    FilesystemZip::zip = static_cast<mz_zip_archive*>(malloc(sizeof(mz_zip_archive)));
+    memset(FilesystemZip::zip, 0, sizeof(mz_zip_archive));
     
-    std::lock_guard<decltype(FilesystemZip::mutex)> lock(FilesystemZip::mutex);
-    FilesystemZip::zip = FilesystemZip::openedZips[FilesystemZip::zipPath];
-    if (!FilesystemZip::zip) {
-        FilesystemZip::zip = new Zip(FilesystemZip::zipPath);
-        FilesystemZip::openedZips[FilesystemZip::zipPath] = FilesystemZip::zip;
+    mz_bool status = mz_zip_reader_init_file((mz_zip_archive*)FilesystemZip::zip, zipPath.c_str(), 0);
+    if (!status)
+    {
+        std::cout << "[Filesystem] Cannot open zip file: " + zipPath << std::endl;
     }
+    
+    for (mz_uint i = 0; i < mz_zip_reader_get_num_files((mz_zip_archive*)FilesystemZip::zip); i++)
+    {
+        mz_zip_archive_file_stat file_stat;
+        if (!mz_zip_reader_file_stat((mz_zip_archive*)FilesystemZip::zip, i, &file_stat))
+        {
+            std::cout << "[Filesystem] Cannot read entry with index: " 
+                    + std::to_string(i) + " from zip archive " + zipPath << std::endl;
+            continue;
+        }
+        
+        //FilesystemZip::entries.insert(file_stat.m_filename, std::make_tuple(file_stat.m_file_index, file_stat.m_uncomp_size));
+        FilesystemZip::entries[file_stat.m_filename] = std::make_tuple(file_stat.m_file_index, file_stat.m_uncomp_size);
+        //std::cout << file_stat.m_filename << " Index: " << std::get<0>(FilesystemZip::entries[file_stat.m_filename]) << " Uncompressed size: " << std::get<1>(FilesystemZip::entries[file_stat.m_filename]) << std::endl;
+    }
+
+    //FilesystemZip::openedZips[FilesystemZip::zipPath] = FilesystemZip::zip;
+    
+    // std::lock_guard<decltype(FilesystemZip::mutex)> lock(FilesystemZip::mutex);
+    // FilesystemZip::zip = FilesystemZip::openedZips[FilesystemZip::zipPath];
+    // if (!FilesystemZip::zip) {
+    //     FilesystemZip::zip = new Zip(FilesystemZip::zipPath);
+    //     
+    // }
     FilesystemZip::initialized = true;   
 }
 
 void FilesystemZip::shutdown()
 {
     std::lock_guard<decltype(FilesystemZip::mutex)> lock(FilesystemZip::mutex);
+    free(FilesystemZip::zip);
     FilesystemZip::zip = nullptr;
-    if (FilesystemZip::openedZips.count(FilesystemZip::zipPath) == 1) {
-        FilesystemZip::openedZips.erase(FilesystemZip::zipPath);
-    }
+    // if (FilesystemZip::openedZips.count(FilesystemZip::zipPath) == 1) {
+    //     FilesystemZip::openedZips.erase(FilesystemZip::zipPath);
+    // }
     FilesystemZip::fileList.clear();
     FilesystemZip::initialized = false;
 }
@@ -52,11 +80,33 @@ void FilesystemZip::shutdown()
 FileInterface* FilesystemZip::openFile(FileInfo& filePath, FileInterface::Mode mode)
 {
     FileInfo fileInfo(filePath.getAbsolutePath(), false);
-    FileInterface* file = FilesystemZip::findFile(fileInfo);
+    FileZip* file = dynamic_cast<FileZip*>(FilesystemZip::findFile(fileInfo));
     bool isExists = (file != nullptr);
     if (!isExists)
-    {        
-        file = new FileZip(fileInfo, FilesystemZip::zip);
+    {
+        file = new FileZip(fileInfo);
+
+        FilesystemZip::EntriesMap::const_iterator it = FilesystemZip::entries.find(fileInfo.getName());
+        if (it == FilesystemZip::entries.end()) {
+            std::cout << "[FilesystemZip] Cannot find the specified file in the zip entries" << std::endl;
+            return nullptr;
+        }
+        
+        uint32_t index = std::get<0>(it->second);
+        uint64_t size = std::get<1>(it->second);
+        file->data.resize((size_t)size);
+
+        std::cout << fileInfo.getName() << " Index: " << index << " Uncompressed size: " << size << std::endl;
+        
+        bool ok = mz_zip_reader_extract_to_mem_no_alloc((mz_zip_archive*)FilesystemZip::zip,
+                                                        index,
+                                                        file->data.data(),
+                                                        (size_t)size,
+                                                        0, 0, 0);
+        if(!ok)
+        {
+            std::cout << "[FilesystemZip] Cannot open the specified file in the zip entries" << std::endl;
+        }
     }
     file->open(mode);
     
@@ -93,7 +143,9 @@ bool FilesystemZip::isReadOnly()
         return true;
     }
     
-    return FilesystemZip::zip->isReadOnly();
+    std::filesystem::perms zipPerms = std::filesystem::status(FilesystemZip::zipPath).permissions();
+    return ((zipPerms & std::filesystem::perms::owner_write) != std::filesystem::perms::none);
+    //return FilesystemZip::zip->isReadOnly();
 }
 
 bool FilesystemZip::createFile(FileInfo& filePath)

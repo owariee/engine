@@ -18,7 +18,7 @@ class AudioManager
         ~AudioManager();
         AudioSource* addSound(FileInterface* file);
         bool removeSound(AudioSource* instance);
-        void processSounds(double frameTime);
+        void processSounds();
 };
 
 #endif//AUDIOMANAGER_HPP

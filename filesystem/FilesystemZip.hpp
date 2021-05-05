@@ -1,6 +1,8 @@
 #ifndef FILESYSTEMZIP_HPP
 #define FILESYSTEMZIP_HPP
 
+#include "miniz.h"
+
 #include "FilesystemInterface.hpp"
 #include "FileNative.hpp"
 #include "FileZip.hpp"
@@ -8,6 +10,7 @@
 #include <string>
 #include <mutex>
 #include <unordered_map>
+#include <map>
 
 class FilesystemZip final : public FilesystemInterface
 {
@@ -33,12 +36,13 @@ class FilesystemZip final : public FilesystemInterface
         virtual bool isDir(FileInfo& dirPath) override;
 
     private:
-        Zip* zip;
+        mz_zip_archive* zip;
         FileInterface* file;
         std::string zipPath;
         std::string basePath;
         bool initialized;
-        static std::unordered_map<std::string, Zip*> openedZips;
+        typedef std::map<std::string, std::tuple<uint32_t, uint64_t>> EntriesMap;
+        EntriesMap entries;
         std::mutex mutex;
         FileList fileList;
 
