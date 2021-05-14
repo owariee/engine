@@ -6,27 +6,26 @@
 class FileInfo
 {
     private:
-        std::string name;
-        std::string baseName;
-        std::string extension;
-        std::string absolutePath;
-        std::string basePath;
-
         bool dir;
 
+        std::string baseName;
+        std::string extension;
+        std::string basePath;
+
     public:
-        FileInfo(const std::string& filePath, bool isDir = false);
+        FileInfo(std::string path, bool dir = false);
         ~FileInfo();
         
-        std::string& getName();
-        std::string& getBaseName();
-        std::string& getExtension();
-        std::string& getAbsolutePath();
-        std::string& getBasePath();
         bool isDir();
         bool isValid();
-
         bool operator==(FileInfo& file);
+        
+        std::string getName();
+        std::string getBaseName();
+        std::string getExtension();
+        std::string getAbsolutePath();
+        std::string getBasePath();
 };
 
 #endif//FILEINFO_HPP
+
