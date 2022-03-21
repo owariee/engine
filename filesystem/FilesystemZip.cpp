@@ -84,7 +84,7 @@ FileInterface* FilesystemZip::openFile(FileInfo& filePath, FileInterface::Mode m
     bool isExists = (file != nullptr);
     if (!isExists)
     {
-        file = new FileZip(fileInfo);
+        file = new FileZip(fileInfo, true);
 
         FilesystemZip::EntriesMap::const_iterator it = FilesystemZip::entries.find(fileInfo.getName());
         if (it == FilesystemZip::entries.end()) {

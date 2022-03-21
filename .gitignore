@@ -3,3 +3,7 @@ build/
 .vscode/
 .cache/
 game/
+CMakeFiles/
+cmake_install.cmake
+*.a
+Makefile

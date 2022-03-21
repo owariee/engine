@@ -74,6 +74,11 @@ FileInfo& FileNative::getFileInfo()
     return FileNative::info;
 }
 
+uint8_t FileNative::getMode()
+{
+    return FileNative::mode;
+}
+
 uint64_t FileNative::getSize()
 {
     if (!FileNative::isOpen())

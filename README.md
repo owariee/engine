@@ -1,6 +1,24 @@
 # 🧊 Engine
-This is an (OpenGL) engine!
 
+This is an engine in development, by now we have an opengl graphics backend.
+Feel free to contribute!!
+
+## Development
+
+### Cloning the repo
+
+git clone git@github.com:owariee/engine.git
+
+### Updating submodules
+
+git submodule update --init --recursive
+
+## Building
+
+mkdir build
+cd build
+cmake ..
+make
 
 ## Dependency list
 1. GLFW
