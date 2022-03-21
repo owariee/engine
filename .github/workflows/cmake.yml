@@ -25,6 +25,9 @@ jobs:
     - name: Install libxcursor-dev
       run: sudo apt install -y libxcursor-dev
 
+    - name: Install libxi-dev
+      run: sudo apt install -y libxi-dev
+
     - name: Updating submodules
       run: git submodule update --init --recursive
 
