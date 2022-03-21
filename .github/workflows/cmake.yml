@@ -16,11 +16,22 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Build
+    - name: Install libxrandr
+      run: apt install -y libxrandr-dev
+
+    - name: Updating submodules
+      run: git submodule update --init --recursive
+
+    - name: Create build directory
+      run: mkdir build
+
+    - name: Generate cmake files
       run: |
-        git submodule update --init --recursive
-        mkdir build
         cd build
         cmake ..
+
+    - name: Build using make
+      run: |
+        cd build
         make
       
