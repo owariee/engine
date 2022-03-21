@@ -6,3 +6,5 @@ CMakeFiles/
 cmake_install.cmake
 *.a
 Makefile
+CMakeCache.txt
+miniz.pc
