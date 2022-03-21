@@ -22,6 +22,9 @@ jobs:
     - name: Install libxinerama-dev
       run: sudo apt install -y libxinerama-dev
 
+    - name: Install libxcursor-dev
+      run: sudo apt install -y libxcursor-dev
+
     - name: Updating submodules
       run: git submodule update --init --recursive
 
