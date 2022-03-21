@@ -16,6 +16,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Update repo information about packages
+      run: sudo apt update
+
     - name: Install libxrandr-dev
       run: sudo apt install -y libxrandr-dev
 
