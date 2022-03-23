@@ -3,6 +3,7 @@ mkdir build-linux
 cd build-linux
 cmake ..
 make
+cd ..
 
 mkdir build-windows
 cd build-windows
