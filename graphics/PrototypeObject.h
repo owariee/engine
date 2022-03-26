@@ -6,11 +6,3 @@ public:
     PrototypeObject(/* args */);
     ~PrototypeObject();
 };
-
-PrototypeObject::PrototypeObject(/* args */)
-{
-}
-
-PrototypeObject::~PrototypeObject()
-{
-}

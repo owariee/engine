@@ -6,11 +6,3 @@ public:
     SceneManager(/* args */);
     ~SceneManager();
 };
-
-SceneManager::SceneManager(/* args */)
-{
-}
-
-SceneManager::~SceneManager()
-{
-}
