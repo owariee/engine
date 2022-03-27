@@ -1,5 +1,5 @@
 Package: engine
 Version: 0.1
 Maintainer: João Gabriel Sabatini
-Architecture: x86_64
+Architecture: amd64
 Description: "C++ and OpenGL game engine"

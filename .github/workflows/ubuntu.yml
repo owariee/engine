@@ -55,7 +55,7 @@ jobs:
       with:
         if-no-files-found: error
         name: engine-ubuntu-${{ github.sha }}
-        path: debian.deb
+        path: dist/debian.deb
 
   install-ubuntu-pkg:
     name: Install Ubuntu Package
