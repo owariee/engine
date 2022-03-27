@@ -11,14 +11,14 @@ env:
 
 jobs:
   build-archlinux-pkg:
-    name: Build Arch Linux .pkg
+    name: Build Arch Linux Package
     runs-on: ubuntu-latest
     container: archlinux:base
 
     steps:
     - uses: actions/checkout@v2
 
-    - name: Install Dependencies
+    - name: Install dependencies
       run: pacman -Syyuu --noconfirm base-devel git
 
     - name: Add arch-builder user
@@ -28,7 +28,7 @@ jobs:
         printf 'Set disable_coredump false\n' >> /etc/sudo.conf
         chown -R arch-builder .
 
-    - name: Build .pkg
+    - name: Build package
       run: |
         cd dist/archlinux/
         sudo -u arch-builder makepkg --noconfirm -s
@@ -41,7 +41,7 @@ jobs:
         path: dist/archlinux/engine-*.pkg.tar.zst
 
   install-archlinux-pkg:
-    name: Install Arch Linux .pkg
+    name: Install Arch Linux Package
     needs: build-archlinux-pkg
     runs-on: ubuntu-latest
     container: archlinux:base

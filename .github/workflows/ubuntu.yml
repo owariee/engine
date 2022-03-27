@@ -11,7 +11,7 @@ env:
 
 jobs:
   build-ubuntu-deb:
-    name: Build Ubuntu .deb
+    name: Build Ubuntu Package
     runs-on: ubuntu-latest
 
     steps:
@@ -30,15 +30,8 @@ jobs:
     - name: Updating submodules
       run: git submodule update --init --recursive
 
-    - name: Create build directory
-      run: mkdir build
+    - name: Generate build files
+      run: cmake -S . -B build
 
-    - name: Generate cmake files
-      run: |
-        cd build
-        cmake ..
-
-    - name: Build using make
-      run: |
-        cd build
-        make
+    - name: Compile
+      run: cmake --build build -t game
