@@ -32,13 +32,20 @@ jobs:
       run: git submodule update --init --recursive
 
     - name: Generate build files
-      run: cmake -S . -B build
+      run: |
+        mkdir -p build
+        cd build
+        cmake ..
 
     - name: Compile
-      run: cmake --build build -t game
+      run: |
+        cd build
+        make game
 
     - name: Install files
-      run: cmake --install build --prefix "${{ github.workspace }}/dist/debian"
+      run: |
+        cd build
+        DESTDIR="../dist/debian" make install
 
     - name: Generate package
       run: dpkg-deb --build dist/debian
