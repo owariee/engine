@@ -12,3 +12,5 @@ build-linux/
 build-windows/
 dist/archlinux/engine/
 dist/archlinux/src/
+dist/archlinux/pkg/
+dist/archlinux/engine*.pkg.tar.zst

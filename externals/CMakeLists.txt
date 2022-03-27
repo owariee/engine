@@ -1,13 +1,13 @@
-add_subdirectory(glfw)
+add_subdirectory(glfw EXCLUDE_FROM_ALL)
 
 set(LIBTYPE STATIC CACHE STRING "Static openal build" FORCE)
 set(ALSOFT_EXAMPLES OFF CACHE BOOL "Build openal examples" FORCE)
 set(ALSOFT_UTILS OFF CACHE BOOL "Build openal config util" FORCE)
 set(ALSOFT_UPDATE_BUILD_VERSION OFF CACHE BOOL "Build openal version utility" FORCE)
-add_subdirectory(openal-soft)
+add_subdirectory(openal-soft EXCLUDE_FROM_ALL)
 
-add_subdirectory(glad)
-add_subdirectory(glm)
+add_subdirectory(glad EXCLUDE_FROM_ALL)
+add_subdirectory(glm EXCLUDE_FROM_ALL)
 
 add_library(imgui imgui/imgui.cpp
                   imgui/imgui_demo.cpp
@@ -17,4 +17,4 @@ add_library(imgui imgui/imgui.cpp
 target_include_directories(imgui PUBLIC ./imgui)
 
 set(BUILD_EXAMPLES OFF CACHE BOOL "Build miniz examples" FORCE)
-add_subdirectory(miniz)
+add_subdirectory(miniz EXCLUDE_FROM_ALL)
