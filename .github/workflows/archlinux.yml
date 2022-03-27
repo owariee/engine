@@ -42,7 +42,7 @@ jobs:
 
   install-archlinux-pkg:
     name: Install Arch Linux .pkg
-    needs: build-arch-linux-pkg
+    needs: build-archlinux-pkg
     runs-on: ubuntu-latest
     container: archlinux:base
 
