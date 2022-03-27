@@ -38,7 +38,7 @@ jobs:
       run: cmake --build build -t game
 
     - name: Install files
-      run: cmake --install build --prefix "dist/debian"
+      run: cmake --install build --prefix "${{ github.workspace }}/dist/debian"
 
     - name: Generate package
       run: dpkg-deb --build dist/debian
