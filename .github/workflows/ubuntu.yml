@@ -48,14 +48,16 @@ jobs:
         DESTDIR="../dist/debian" make install
 
     - name: Generate package
-      run: dpkg-deb --build dist/debian
+      run: |
+        dpkg-deb --build dist/debian
+        mv dist/debian.deb engine.deb
 
     - name: Upload build to workflow
       uses: actions/upload-artifact@v2
       with:
         if-no-files-found: error
         name: engine-ubuntu-${{ github.sha }}
-        path: dist/debian.deb
+        path: engine.deb
 
   install-ubuntu-pkg:
     name: Install Ubuntu Package
@@ -71,7 +73,7 @@ jobs:
       run: sudo apt update
 
     - name: Install package
-      run: dpkg -i debian.deb
+      run: yes | dpkg -i engine.deb
 
     # - name: Test package
     #   run: engine --version
