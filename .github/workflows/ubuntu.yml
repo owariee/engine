@@ -73,7 +73,7 @@ jobs:
       run: sudo apt update
 
     - name: Install package
-      run: yes | sudo dpkg -i engine.deb
+      run: sudo dpkg -i engine.deb
 
     # - name: Test package
     #   run: engine --version
