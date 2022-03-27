@@ -8,5 +8,10 @@ cmake_install.cmake
 Makefile
 CMakeCache.txt
 miniz.pc
+<<<<<<< HEAD
 dist/archlinux/engine/
 dist/archlinux/src/
+=======
+build-linux/
+build-windows/
+>>>>>>> 680fd888283b80bdc1f8280868e41ed8da8d8784
