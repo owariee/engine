@@ -37,7 +37,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         if-no-files-found: error
-        name: engine-arch-${{ github.sha }}
+        name: engine-archlinux-${{ github.sha }}
         path: dist/archlinux/engine-*.pkg.tar.zst
 
   install-archlinux-pkg:
@@ -49,7 +49,7 @@ jobs:
     steps:
     - uses: actions/download-artifact@v2
       with:
-        name: engine-arch-${{ github.sha }}
+        name: engine-archlinux-${{ github.sha }}
 
     - name: Install dependencies
       run: pacman -Syyuu --noconfirm

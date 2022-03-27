@@ -10,7 +10,7 @@ env:
   BUILD_TYPE: Release
 
 jobs:
-  build-ubuntu-deb:
+  build-ubuntu-pkg:
     name: Build Ubuntu Package
     runs-on: ubuntu-latest
 
@@ -36,3 +36,35 @@ jobs:
 
     - name: Compile
       run: cmake --build build -t game
+
+    - name: Install files
+      run: cmake --install build --prefix "dist/debian"
+
+    - name: Generate package
+      run: dpkg-deb --build dist/debian
+
+    - name: Upload build to workflow
+      uses: actions/upload-artifact@v2
+      with:
+        if-no-files-found: error
+        name: engine-ubuntu-${{ github.sha }}
+        path: debian.deb
+
+  install-ubuntu-pkg:
+    name: Install Ubuntu Package
+    needs: build-ubuntu-pkg
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/download-artifact@v2
+      with:
+        name: engine-ubuntu-${{ github.sha }}
+
+    - name: Update repo information about packages
+      run: sudo apt update
+
+    - name: Install package
+      run: dpkg -i debian.deb
+
+    # - name: Test package
+    #   run: engine --version
