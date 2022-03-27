@@ -1,0 +1,63 @@
+name: Arch Linux
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build-archlinux-pkg:
+    name: Build Arch Linux .pkg
+    runs-on: ubuntu-latest
+    container: archlinux:base
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install Dependencies
+      run: pacman -Syyuu --noconfirm base-devel git
+
+    - name: Add arch-builder user
+      run: |
+        useradd arch-builder
+        printf 'arch-builder ALL=(ALL) NOPASSWD: ALL\n' >/etc/sudoers.d/arch-builder
+        printf 'Set disable_coredump false\n' >> /etc/sudo.conf
+        chown -R arch-builder .
+
+    - name: Build .pkg
+      run: |
+        cd dist/archlinux/
+        sudo -u arch-builder makepkg --noconfirm -s
+
+    - name: Upload build to workflow
+      uses: actions/upload-artifact@v2
+      with:
+        if-no-files-found: error
+        name: engine-arch-${{ github.sha }}
+        path: dist/archlinux/engine-*.pkg.tar.zst
+
+  install-archlinux-pkg:
+    name: Install Arch Linux .pkg
+    needs: build-arch-linux-pkg
+    runs-on: ubuntu-latest
+    container: archlinux:base
+
+    steps:
+    - uses: actions/download-artifact@v2
+      with:
+        name: engine-arch-${{ github.sha }}
+
+    - name: Install dependencies
+      run: pacman -Syyuu --noconfirm
+
+    - name: Install package
+      run: pacman -U ./engine-*.pkg.tar.zst --noconfirm
+
+    # - name: Test package
+    #   run: engine --version
+
+# Thanks quick-lint-js for the example on how to do this build in github actions

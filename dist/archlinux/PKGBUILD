@@ -2,7 +2,6 @@
 pkgname=engine
 pkgver=dev
 pkgrel=1
-epoch=1
 pkgdesc="C++ and OpenGL game engine"
 arch=('x86_64')
 url="https://github.com/owariee/engine"
@@ -26,5 +25,5 @@ build() {
 
 package() {
   cd $pkgname/build
-  make DESTDIR="$pkgdir/" install
+  DESTDIR="$pkgdir/" make install
 }

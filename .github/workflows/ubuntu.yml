@@ -1,4 +1,4 @@
-name: CMake
+name: Ubuntu
 
 on:
   push:
@@ -10,7 +10,8 @@ env:
   BUILD_TYPE: Release
 
 jobs:
-  build:
+  build-ubuntu-deb:
+    name: Build Ubuntu .deb
     runs-on: ubuntu-latest
 
     steps:
@@ -19,20 +20,12 @@ jobs:
     - name: Update repo information about packages
       run: sudo apt update
 
-    - name: Install libxrandr-dev
-      run: sudo apt install -y libxrandr-dev
-
-    - name: Install libxinerama-dev
-      run: sudo apt install -y libxinerama-dev
-
-    - name: Install libxcursor-dev
-      run: sudo apt install -y libxcursor-dev
-
-    - name: Install libxi-dev
-      run: sudo apt install -y libxi-dev
-
-    - name: Install libgl-dev
-      run: sudo apt install -y libgl-dev
+    - name: Install dependencies
+      run: sudo apt install -y libxrandr-dev \
+                               libxinerama-dev \
+                               libxcursor-dev \
+                               libxi-dev \
+                               libgl-dev
 
     - name: Updating submodules
       run: git submodule update --init --recursive
@@ -49,4 +42,3 @@ jobs:
       run: |
         cd build
         make
-      
