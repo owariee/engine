@@ -26,7 +26,9 @@ jobs:
                             libxinerama-dev \
                             libxcursor-dev \
                             libxi-dev \
-                            libgl-dev
+                            libgl-dev \
+                            libglfw3-dev \
+                            libopenal-dev
 
     - name: Updating submodules
       run: git submodule update --init --recursive

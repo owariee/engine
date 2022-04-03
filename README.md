@@ -46,6 +46,19 @@ give the right permissions with `chmod +x build.sh` and execute `./build.sh`.
 
 ## Development
 
+The project can be built against its dependencies statically or dynamically,
+but when using static dependencies, it will, necessarily, build the dependency
+from source, but if the dinamic dependencies are chosen, the engine can be built
+against the system native libraries, in UNIX systems, which saves compilation time,
+and allows the system to use native libraries, or, if the system doesn't provide
+that dependency, then it can be built from the external dependencies and then
+linked dinamically against the engine. On non-UNIX systems, even the dinamic
+dependencies will be built from source.
+
+The variable that controls this behaviour is BUILD_STATIC, and it defaults to FALSE.
+
+![BUILD_STATIC usage example](/doc/BUILD_STATIC_EXAMPLE.jpg)
+
 ### Libraries used in this project
 
 1. GLFW
