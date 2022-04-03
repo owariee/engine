@@ -28,7 +28,8 @@ jobs:
                             libxi-dev \
                             libgl-dev \
                             libglfw3-dev \
-                            libopenal-dev
+                            libopenal-dev \
+                            libcglm-dev
 
     - name: Updating submodules
       run: git submodule update --init --recursive
