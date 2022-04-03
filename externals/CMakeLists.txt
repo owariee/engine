@@ -1,4 +1,12 @@
-add_subdirectory(glfw EXCLUDE_FROM_ALL)
+# Enable pkg-config in Linux environments
+if(LINUX)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(GLFW REQUIRED glfw3)
+endif()
+
+if(NOT GLFW_FOUND)
+    add_subdirectory(glfw EXCLUDE_FROM_ALL)
+endif()
 
 set(LIBTYPE STATIC CACHE STRING "Static openal build" FORCE)
 set(ALSOFT_EXAMPLES OFF CACHE BOOL "Build openal examples" FORCE)

@@ -6,13 +6,18 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Detect Linux environments
+if(UNIX AND NOT APPLE)
+    set(LINUX TRUE)
+endif()
+
 # Importing differrent libraries
 add_subdirectory(externals)
 
 # Set _DEBUG preprocessor macro if debug mode is set on Cmake
-if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_compile_definitions(_DEBUG)
-endif (CMAKE_BUILD_TYPE STREQUAL "Debug")
+endif()
 
 # Compile engine sub-modules
 add_subdirectory(filesystem)
