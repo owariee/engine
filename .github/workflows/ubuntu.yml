@@ -22,12 +22,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        sudo apt install -y libxrandr-dev \
-                            libxinerama-dev \
-                            libxcursor-dev \
-                            libxi-dev \
-                            libgl-dev \
-                            libglfw3-dev \
+        sudo apt install -y libglfw3-dev \
                             libopenal-dev \
                             libglm-dev
 
