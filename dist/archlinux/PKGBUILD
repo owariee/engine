@@ -6,7 +6,8 @@ pkgdesc="C++ and OpenGL game engine"
 arch=('x86_64')
 url="https://github.com/owariee/engine"
 license=('MIT')
-makedepends=(cmake libxrandr libxinerama libxcursor libxi mesa python)
+depends=(glfw glm openal)
+makedepends=(cmake mesa python)
 source=('git+https://github.com/owariee/engine.git')
 md5sums=('SKIP')
 
