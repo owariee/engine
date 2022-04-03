@@ -1,7 +1,7 @@
 # Enable pkg-config in Linux environments
 if(LINUX)
     find_package(PkgConfig REQUIRED)
-    pkg_check_modules(GLFW REQUIRED glfw3)
+    pkg_check_modules(GLFW OPTIONAL glfw3)
 endif()
 
 if(NOT GLFW_FOUND)
