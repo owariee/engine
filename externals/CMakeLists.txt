@@ -24,6 +24,7 @@ if(NOT OPENAL_FOUND)
     set(ALSOFT_UTILS OFF CACHE BOOL "Build openal config util" FORCE)
     set(ALSOFT_UPDATE_BUILD_VERSION OFF CACHE BOOL "Build openal version utility" FORCE)
     add_subdirectory(openal-soft EXCLUDE_FROM_ALL)
+    add_library(openal INTERFACE OpenAL)
 endif()
 
 add_subdirectory(glad EXCLUDE_FROM_ALL)
