@@ -1,0 +1,33 @@
+                                        CELESTIA LICENSE
+
+                        Celestia Copyright(c) 2022 João Gabriel Sabatini 
+
+THIS DOCUMENT DESCRIBES A CONTRACT BETWEEN YOU AND JOÃO GABRIEL SABATINI. PLEASE READ IT BEFORE
+DOWNLOADING OR USING CELESTIA. BY DOWNLOADING AND/OR USING THE CELESTIA YOU ACCEPT THIS LICENSE. IF
+YOU DO NOT AGREE TO THE TERMS OF THIS LICENSE PLEASE DON’T DOWNLOAD OR USE CELESTIA.
+
+  You may, free of charge, download and use Celestia to develop any applications(including games)
+that will run using Celestia capabilities. You may distribute your application that are constructed
+using Celestia's features in source and object code form, but only for free. 
+
+  You may copy, modify, and distribute Celestia and any modifications you make in source and object
+code form, but only for free.  Any distribution of Celestia must include this LICENSE file and
+thirdpartylegalnotices.txt.  
+ 
+  Any distribution of Celestia or a substantial portion of Celestia's code must include the above 
+copyright notice and the following: 
+
+    DISCLAIMER OF WARRANTIES.  THE CELESTIA AND ANY OTHER MATERIAL DOWNLOADED BY LICENSEE IS 
+    PROVIDED "AS IS".  JOÃO GABRIEL SABATINI AND ITS SUPPLIERS DISCLAIM ALL WARRANTIES WITH 
+    RESPECT TO CELESTIA, EITHER EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, IMPLIED
+    WARRANTIES OF MERCHANTABILITY, NON-INFRINGEMENT, TITLE AND FITNESS FOR A PARTICULAR PURPOSE.
+
+    LIMITATION OF LIABILITY.  IN NO EVENT SHALL JOÃO GABRIEL SABATIN OR ITS SUPPLIERS BE LIABLE
+    FOR ANY SPECIAL, INCIDENTAL, INDIRECT, OR CONSEQUENTIAL DAMAGES WHATSOEVER (INCLUDING,
+    WITHOUT LIMITATION, DAMAGES FOR LOSS OF BUSINESS PROFITS, BUSINESS INTERRUPTION, LOSS OF
+    BUSINESS INFORMATION, OR ANY OTHER PECUNIARY LOSS) ARISING OUT OF THE USE OF OR INABILITY
+    TO USE CELESTIA, EVEN IF JOÃO GABRIEL SABATINI HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH
+    DAMAGES.
+       
+If you would like to use Celestia for a commercial purpose, please contact João Gabriel Sabatini at 
+jgabrielsabatini@outlook.com.

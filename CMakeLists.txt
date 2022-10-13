@@ -22,11 +22,8 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_compile_definitions(_DEBUG)
 endif()
 
-# Compile engine sub-modules
-add_subdirectory(filesystem)
-add_subdirectory(audio)
-add_subdirectory(graphics)
-add_subdirectory(window)
+# Compile engine and sub-modules
+add_subdirectory(source)
 
 add_library(engine INTERFACE)
 target_link_libraries(engine INTERFACE graphics audio filesystem window)
