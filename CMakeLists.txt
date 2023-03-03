@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 
 project(dawn)
 
+# Configure C++ compiler.
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -22,14 +23,6 @@ option(DAWN_WITH_BUNDLED_GLM "Use bundled glm version (Windows only)" OFF)
 option(DAWN_WITH_BUNDLED_IMGUI "Use bundled imgui version (Windows only)" OFF)
 option(DAWN_WITH_BUNDLED_MINIZ "Use bundled miniz version (Windows only)" OFF)
 option(DAWN_WITH_BUNDLED_OPENAL "Use bundled openal version (Windows only)" OFF)
-
-# Configure building type for each bundled.
-# set(DAWN_WITH_BUNDLED_GLAD_STATIC FALSE CACHE BOOL "Enable static linking for glad.")
-# set(DAWN_WITH_BUNDLED_GLFW_STATIC FALSE CACHE BOOL "Enable static linking for glfw.")
-# set(DAWN_WITH_BUNDLED_GLM_STATIC FALSE CACHE BOOL "Enable static linking for glm.")
-# set(DAWN_WITH_BUNDLED_IMGUI_STATIC FALSE CACHE BOOL "Enable static linking for imgui.")
-# set(DAWN_WITH_BUNDLED_MINIZ_STATIC FALSE CACHE BOOL "Enable static linking for miniz.")
-# set(DAWN_WITH_BUNDLED_OPENAL_STATIC FALSE CACHE BOOL "Enable static linking for openal.")
 
 # Manually set the path of the libraries.
 set(DAWN_GLAD_LIBRARIES CACHE PATH "Path to the glad library")
